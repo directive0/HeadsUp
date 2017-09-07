@@ -216,6 +216,10 @@ while(status != "quit"):
     
     pygame.time.wait(30)
     
+    if status = "quit":
+        pygame.quit()
+        quit()
+    
     # this next item checks to see if the q key was pressed 
     #key = pygame.key.get_pressed()
     
