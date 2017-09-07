@@ -211,6 +211,8 @@ while(status != "quit"):
                 selector += 1
                 if selector > 4:
                     selector = 4
+            if event.key == pygame.K_q:
+                status = "quit"                  
     
     pygame.time.wait(30)
     
