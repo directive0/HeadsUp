@@ -32,8 +32,8 @@ pygame.mouse.set_visible(0)
 
 # instantiate a pygame display with the name "surface". 
 
-surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
-#surface = pygame.display.set_mode(screenSize)
+#surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
+surface = pygame.display.set_mode(screenSize)
 pygame.display.set_caption('HeadsUp')
 
 # Set the state value.
@@ -212,13 +212,10 @@ while(status != "quit"):
                 if selector > 4:
                     selector = 4
             if event.key == pygame.K_q:
-                status = "quit"                  
+                pygame.quit()
+                quit()
     
     pygame.time.wait(30)
-    
-    if status = "quit":
-        pygame.quit()
-        quit()
     
     # this next item checks to see if the q key was pressed 
     #key = pygame.key.get_pressed()
