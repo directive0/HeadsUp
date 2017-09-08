@@ -1,9 +1,6 @@
 import psutil
 import time
 
-
-
-
 def sensorget():
     
    statusram = psutil.virtual_memory()

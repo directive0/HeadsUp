@@ -34,6 +34,14 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
     # Convert the 0-1 range into a value in the right range.
     return rightMin + (valueScaled * rightSpan)
 
+def gettextsize():
+    # give it a string
+    # give it a size
+    # return the width required for that text.
+    pass
+    
+    
+    
 # the following class draws graphs with or without outlines and updates values everytime it is called.
 class GraphLine(object):
     
@@ -108,9 +116,13 @@ class GraphLine(object):
         #draw the lines
         labelposy,labelposx = (self.yTop+20),(self.xLeft+25)
         readoutposx = self.xRight - 100
+        content = str(data) + "%"
         pygame.draw.lines(surface, colour, False, DataCords, self.line)
         self.label.update(self.title, 26, labelposx, labelposy, titleFont, textc)
-        self.readout.update(str(data), 26, readoutposx, labelposy, titleFont, textc)
+        self.readout.update(content, 26, readoutposx, labelposy, titleFont, textc)
+        textsize = self.readout.getrect()
+        textpos = self.xRight - textsize[0] - 13
+        self.readout.update(content, 26, textpos, labelposy, titleFont, textc)
         self.label.draw(surface)
         self.readout.draw(surface)
         #pygame.draw.lines(surface, colour, False, ((self.xLeft,self.yTop),(self.xRight,self.yTop),(self.xRight,self.yBottom),(self.xLeft,self.yBottom),(self.xLeft,self.yTop)), self.line)
@@ -135,6 +147,12 @@ class Label(object):
         self.fontSize = fontSize
         self.myfont = pygame.font.Font(fontType, self.fontSize)
         self.color = color
+        
+    def getrect(self):
+        label = self.myfont.render(self.content, 1, self.color)
+        textw = label.get_width()
+        texth = label.get_height()
+        return textw,texth
         
     def draw(self, surface):
         label = self.myfont.render(self.content, 1, self.color)
@@ -203,6 +221,18 @@ class actionarea(object):
         rect = pygame.Rect((self.info["innerx"],y), (self.info["actareaw"],h))
         pygame.draw.rect(self.surface, buttonc, rect)
         
+    def drawbutton(self,y,content):
+        butxmid = self.info["innerx"] + (self.info["aaspanx"] / 2)  
+        self.drawblock(y,40)
+        butlabel = Label()
+        butlabel.update(content,26,butxmid,y,titleFont,textc)
+        size = butlabel.getrect()
+        print(size)
+        textposx = butxmid - (size[0]/2)
+        
+        butlabel.update(content,26,textposx,(y+5),titleFont,textc)
+        butlabel.draw(self.surface)
+        
     def draw(self,info):
         self.info = info
         
@@ -211,7 +241,8 @@ class actionarea(object):
             
             # get time and date
             self.getdatetime()
-                        #draw the back of the action area for time and date
+            #draw the back of the action area for time and date
+            
             for i in range(2):
 
                 ypos = self.info["actareay"] + (100*i)
@@ -222,18 +253,26 @@ class actionarea(object):
             # instantiate the label for the time line
             timel = Label()
             timel.update(self.time,26,(self.info["innerx"]+155),(self.info["actareay"]+7),titleFont,textc)
+            size = timel.getrect()
+            labelpos = self.info["innerx"]+(self.info["aaspanx"]/2)-(size[0]/2)
+            timel.update(self.time,26,labelpos,(self.info["actareay"]+7),titleFont,textc)
             timel.draw(self.surface)
             
             # instantiate the label for the date line
             datel = Label()
             datel.update(self.date,26,(self.info["innerx"]+92),(self.info["actareay"]+40),titleFont,textc)
+            size = datel.getrect()
+            labelpos = self.info["innerx"]+(self.info["aaspanx"]/2)-(size[0]/2)
+            datel.update(self.date,26,labelpos,(self.info["actareay"]+40),titleFont,textc)
             datel.draw(self.surface)
             
-            
+        # draw system screen actionable buttons and highlight    
         if self.type == 1:
+            buttontexts = ["Shutdown","Reboot","Toggle Wifi", "Toggle Bluetooth", "Quit HeadsUP"]
+            
             for i in range(5):
                 ypos = self.info["actareay"] + (60*i)
-                self.drawblock(ypos,40)
+                self.drawbutton(ypos,buttontexts[i])
             # self.graphassign(2)
             # graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
         
@@ -293,6 +332,8 @@ class Tile(object):
 
     
     def drawlayout(self):
+        # the following checks what type of tile this is and draws elements accordingly.
+        
         if self.info["tiletype"] == 0:
             #self.actarea = actionarea(0,self.info["surface"])
             self.disparea.draw(self.info)
@@ -312,7 +353,7 @@ class Tile(object):
             self.disparea.draw(self.info)
                     
     def updatelayout(self):
-        
+        # the following checks what kind of tile this is and updates the layout accordingly
         if self.info["tiletype"] == 0:
             self.title = "Home"
             #self.actarea = actionarea(0,self.info["surface"])
@@ -341,7 +382,7 @@ class Tile(object):
         pass
     
     def position(self,page):
-        #if page > 0:
+        # the following updates internal coordinates for each tile so that tiles can move horizontally when the user selects a new one.
         self.info["pos"] = (self.info["x"] - ((self.info["tilejump"]) * page)),self.info["y"]
         self.info["upx"] = (self.info["x"] - (self.info["tilejump"] * page))
         self.info["innerx"] = (self.info["x"] - (self.info["tilejump"] * page)) + self.info["inner"]
@@ -378,5 +419,6 @@ class Tile(object):
             pygame.draw.lines(self.info["surface"], textc, False, ((self.info["innerx"], self.info["lineposy"]),((self.info["innerx"] + self.info["aaspanx"]), self.info["lineposy"])), 6)
             # draw action area
         else:
+            # if not in focus just makes the tile dark grey.
             self.rect = pygame.Rect(self.info["pos"], self.info["size"])
             pygame.draw.rect(self.info["surface"], buttoncmute, self.rect)

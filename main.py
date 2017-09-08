@@ -32,8 +32,8 @@ pygame.mouse.set_visible(0)
 
 # instantiate a pygame display with the name "surface". 
 
-#surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
-surface = pygame.display.set_mode(screenSize)
+surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
+#surface = pygame.display.set_mode(screenSize)
 pygame.display.set_caption('HeadsUp')
 
 # Set the state value.
