@@ -200,11 +200,25 @@ class actionarea(object):
         self.textbox = Box()
         self.surface = self.info["surface"]
         self.type = self.info["tiletype"]
+        self.selector = 0
     
     def outline(self,xLeft,xRight,yTop,yBottom,line):
         pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)
         
-    
+    def selectoralign(self):
+        if self.selector > 4:
+            self.selector = 4
+        if self.selector < 0:
+            self.selector = 0
+            
+    def downkey(self):
+        self.selector += 1
+        self.selectoralign()
+        
+    def upkey(self):
+        self.selector -= 1
+        self.selectoralign()
+        
     def getdatetime(self):
         date = datetime.today()
         datestr = date.ctime()
@@ -227,7 +241,6 @@ class actionarea(object):
         butlabel = Label()
         butlabel.update(content,26,butxmid,y,titleFont,textc)
         size = butlabel.getrect()
-        print(size)
         textposx = butxmid - (size[0]/2)
         
         butlabel.update(content,26,textposx,(y+5),titleFont,textc)
@@ -235,7 +248,7 @@ class actionarea(object):
         
     def draw(self,info):
         self.info = info
-        
+
         if self.type == 0:
             # Home Tile Action area
             
@@ -273,6 +286,8 @@ class actionarea(object):
             for i in range(5):
                 ypos = self.info["actareay"] + (60*i)
                 self.drawbutton(ypos,buttontexts[i])
+                if i == self.selector:
+                    self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
             # self.graphassign(2)
             # graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
         
@@ -330,7 +345,14 @@ class Tile(object):
         self.info["innersize"] = (self.info["inspanx"],self.info["inspany"])
         self.updatelayout()
 
-    
+    def upkey(self):
+        print("keyupped!")
+        self.actionarea.upkey()
+        
+    def downkey(self):
+        print("keydown received!")
+        self.actionarea.downkey()
+        
     def drawlayout(self):
         # the following checks what type of tile this is and draws elements accordingly.
         
@@ -393,8 +415,10 @@ class Tile(object):
     def getinfo(self):
         return self.layout
 
-    def draw(self,page):
-        
+    def draw(self,page1):
+
+        page = (float(page1) / 100)
+
         # check position values
         self.position(page)
         

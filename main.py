@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# HeadsUp Mark 2 - uses parametric means to create Tiles that serve information to headsup displays
+# HeadsUp Mark 3 -  Tiles that serve information to headsup displays
 # Code by C.Barrett
 # Designed by S.Caem
 
@@ -16,9 +16,6 @@ pygame.init()
 pygame.font.init()
 
 
-
-
-
 # set the screen resolution. Since the program is resolution independant it can be given a variety of view sizes.
 
 #screenSize = (640,480)
@@ -32,8 +29,8 @@ pygame.mouse.set_visible(0)
 
 # instantiate a pygame display with the name "surface". 
 
-surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
-#surface = pygame.display.set_mode(screenSize)
+#surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
+surface = pygame.display.set_mode(screenSize)
 pygame.display.set_caption('HeadsUp')
 
 # Set the state value.
@@ -112,7 +109,31 @@ class Scene(object):
         
     def update(self,page):
         pass
+        
+        
+# The following class is to handle interval timers.
+class timer(object):
 
+    # Constructor code logs the time it was instantiated.    
+    def __init__(self):
+        self.timeInit = time.time()
+        self.logtime()
+
+    # The following funtion returns the last logged value.        
+    def timestart(self):
+        return self.timeInit
+        
+    # the following function updates the time log with the current time.
+    def logtime(self):
+        self.lastTime = time.time()
+
+    # the following function returns the interval that has elapsed since the last log.        
+    def timelapsed(self):
+        self.timeLapse = time.time() - self.lastTime
+        #print(self.timeLapse)
+        return self.timeLapse
+         
+         
 def vitalshow():
     info = sensorget()
     title = Label()
@@ -143,8 +164,12 @@ indicator1 = Indicator(surface,screenSize,notiles)
 
 page = 0
 selector = 0
-speed = .5
+speed = 5
 director = 0
+interval = timer()
+graphtime = timer()
+
+#need to find a way to move tiles using integers
 
 
 while(status != "quit"):
@@ -152,23 +177,29 @@ while(status != "quit"):
     
     # page = selector
     # following mess of code moves the tiles into the correct position.
-    if page < selector:
-        page = page + speed
-        
-    if page > selector:
-        page = page - speed
-
-    if page > 1.9 and page < 2.1 and selector == 2:
-        page = 2
+    selectorAdj = selector * 100
     
-    if page > 2.9 and page < 3.1  and selector == 3:
-        page = 3
+    if (interval.timelapsed() >= .01):
+
         
-    if page >3.9 and page < 4.1  and selector == 4:
-        page = 4
+        interval.logtime()
         
-    if page < 0:
-        page  = 0
+        if page < selectorAdj:
+            page = page + speed
+        
+        if page > selectorAdj:
+            page = page - speed
+        
+    print("selector adjust is:")    
+    print(selectorAdj)
+    print("page is:")
+    print(page)
+    #print(page)
+
+    
+   # if page < 0:
+   #     page  = 0
+
 
     # print "page = " + str(page)
     # print "selector = " +  str(selector)
@@ -192,8 +223,9 @@ while(status != "quit"):
     
     
     # puke all those pixels to screen.
+    #print(page)
     pygame.display.flip()
-    
+    keyinto = int(float(page) / 100)
     # input control handling. Get a list of most recent events.
     for event in pygame.event.get():
         # if quit was triggered make ready to quit.
@@ -211,11 +243,17 @@ while(status != "quit"):
                 selector += 1
                 if selector > 4:
                     selector = 4
+            if event.key == pygame.K_DOWN:
+                print("kedowned")
+                print(keyinto)
+                tilelist[keyinto].downkey()
+            if event.key == pygame.K_UP:
+                tilelist[keyinto].upkey()
             if event.key == pygame.K_q:
                 pygame.quit()
                 quit()
     
-    pygame.time.wait(30)
+    pygame.time.wait(3)
     
     # this next item checks to see if the q key was pressed 
     #key = pygame.key.get_pressed()
