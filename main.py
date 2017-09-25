@@ -164,7 +164,7 @@ indicator1 = Indicator(surface,screenSize,notiles)
 
 page = 0
 selector = 0
-speed = 5
+speed = 20
 director = 0
 interval = timer()
 graphtime = timer()
@@ -179,7 +179,7 @@ while(status != "quit"):
     # following mess of code moves the tiles into the correct position.
     selectorAdj = selector * 100
     
-    if (interval.timelapsed() >= .01):
+    if (interval.timelapsed() >= .001):
 
         
         interval.logtime()
@@ -253,7 +253,7 @@ while(status != "quit"):
                 pygame.quit()
                 quit()
     
-    pygame.time.wait(3)
+    pygame.time.wait(30)
     
     # this next item checks to see if the q key was pressed 
     #key = pygame.key.get_pressed()

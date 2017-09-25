@@ -12,27 +12,33 @@ class files(object):
     
     def __init__(self):
         self.home = os.path.expanduser("~")
-        self.cd(self.home)
-        self.listdir()
-        self.current = self.home
+        #self.CD(self.home)
+        #self.List()
+        #self.current = self.home
         
-    def goup(self,path):
+    def GoUp(self,path):
         self.current = os.path.dirname(os.path.dirname(path))
 
-    def cd(self,path):
+    def CD(self,path):
         os.chdir(path)
         
-    def listdir(self):
-        # something I found. It parses a list of the items present in a directory and only adds the subdirectories to the list.
+    def ListDir(self):
+        # something I found. It parses a list of the items present in a directory and only adds the subdirectories to the list. Returns that list.
         
-        #need to figure out how this x for x in item thing works.
+        # need to figure out how this x for x in object thing works.
         
         self.dirlist = [x for x in os.listdir('.') if os.path.isdir(x)]
-        
+
+                
         return self.dirlist
         
-        
-    def open(self, item):
+    def ListText(self):
+        textlist = []
+        for file in os.listdir("./notes"):
+            if file.endswith(".txt"):
+                textlist.append(file)
+        return textlist
+    def Open(self, item):
         #element should be passed a filename and use its current directory 
         
         pass

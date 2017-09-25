@@ -1,9 +1,19 @@
+# HeadsUp Tiles
+# Code by C.Barrett
+# Design by S.Caem
+
+# To do 
+# Integrate file system 
+# integrate Notes
+# integrat 
+
 import pygame
 import pygame.gfxdraw
 import os
 import time
 from datetime import datetime
 from getvitals import *
+from filehandling import *
 
 # Here are some basic colours we can call on.
 background = (38,38,38)
@@ -20,7 +30,7 @@ yellow = (255,221,5)
 black = (0,0,0)
 white = (255,255,255)
 # Here is the location of our font.
-titleFont = "assets/simplifica.ttf"
+titleFont = "assets/font.ttf"
 
 # the following function maps a value from the target range onto the desination range
 def translate(value, leftMin, leftMax, rightMin, rightMax):
@@ -218,6 +228,11 @@ class actionarea(object):
     def upkey(self):
         self.selector -= 1
         self.selectoralign()
+    
+    def enterkey(self):
+        # when receives key down send action area message who will send display area a message?
+        # maybe just send message to display area directly?
+        pass
         
     def getdatetime(self):
         date = datetime.today()
@@ -237,13 +252,15 @@ class actionarea(object):
         
     def drawbutton(self,y,content):
         butxmid = self.info["innerx"] + (self.info["aaspanx"] / 2)  
+        butymid = y + (40 / 2)  
         self.drawblock(y,40)
         butlabel = Label()
         butlabel.update(content,26,butxmid,y,titleFont,textc)
         size = butlabel.getrect()
         textposx = butxmid - (size[0]/2)
+        textposy = butymid - (size[1]/2)
         
-        butlabel.update(content,26,textposx,(y+5),titleFont,textc)
+        butlabel.update(content,26,textposx,textposy,titleFont,textc)
         butlabel.draw(self.surface)
         
     def draw(self,info):
@@ -288,12 +305,21 @@ class actionarea(object):
                 self.drawbutton(ypos,buttontexts[i])
                 if i == self.selector:
                     self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
-            # self.graphassign(2)
-            # graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
+
+        # Define layout for Notes Tiles
+        if self.type == 3:
+            buttontexts = ["View","Up","Down", "Refresh List", "Delete"]
         
+            for i in range(5):
+                ypos = self.info["actareay"] + (60*i)
+                self.drawbutton(ypos,buttontexts[i])
+                if i == self.selector:
+                    self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
+
     
 class displayarea(object):
     def __init__(self,info):
+        self.selector = 0
         self.info = info
         self.surface = self.info["surface"]
         self.type = self.info["tiletype"]
@@ -301,21 +327,52 @@ class displayarea(object):
             self.graph = GraphLine(660,120,1080,340,5, "CPU")
             self.graph2 = GraphLine(660,380,1080,600,5, "RAM")
          #   self.graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
+    
+    def downkey(self):
+        self.selector += 1
+        self.selectoralign()
+        
+    def upkey(self):
+        self.selector -= 1
+        self.selectoralign()
+        
+    def selectoralign(self):
+        if self.selector > 4:
+            self.selector = 4
+        if self.selector < 0:
+            self.selector = 0
             
-            
+    def outline(self,xLeft,xRight,yTop,yBottom,line):
+        pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)       
+        
     def drawblock(self,y,h):
         rect = pygame.Rect((self.info["dispbx"],y), (self.info["dispw"],h))
         pygame.draw.rect(self.surface, buttonc, rect)
+    
+    def drawbutton(self,y,content):
+        butxmid = self.info["dispbx"] + (self.info["dispw"] / 2)  
+        butymid = y + (40 / 2)  
+        self.drawblock(y,40)
+        butlabel = Label()
+        butlabel.update(content,26,butxmid,y,titleFont,textc)
+        size = butlabel.getrect()
+        textposx = butxmid - (size[0]/2)
+        textposy = butymid - (size[1]/2)
+        
+        butlabel.update(content,26,textposx,textposy,titleFont,textc)
+        butlabel.draw(self.surface)
         
     def draw(self,info):
         
         self.info = info
         
+        # Home Tile layout
         if self.type == 0:
             self.info = info
             self.message = "No New Messages"
             self.drawblock(self.info["innery"],self.info["disph"])
-         
+        
+        # System Tile Layout 
         if self.type == 1:
             #self.graphassign(2)
 #           graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
@@ -327,13 +384,30 @@ class displayarea(object):
                 
             self.graph.update(self.surface,data['cpuperc'],0,100,textc)
             self.graph2.update(self.surface,data['ramperc'],0,100,textc)
+    
+    
+        # notes tile layout
+        if self.type == 3:
+            #self.graphassign(2)
+#           graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
+            notes = files()
+            
+            folist = notes.ListText()
+            count= len(folist)
+            for i in range(count):
+                caption = str(folist[i])
+                ypos = self.info["innery"] + (60 * i)
+                self.drawbutton(ypos,caption)
+                if i == self.selector:
+                    self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
+
         
     def update(self):
         pass
     
 class Tile(object):
     def __init__(self,tiletype,surface,screenSize,colour,index):
-        self.info = {"tiletype" : tiletype, "surface" : surface, "x" : 160, "y" : 80, "index" : index, "colour" :colour , "seam" : 80, "inner" : 40, "titlesize" : 88, "spanx" : 960, "spany" : 560, "innerx" : 200, "innery" : 120, "inspanx" : 880, "inspany" : 480, "lineposy" : 240, "aaspanx" : 420, "dispposx" : 660, "dispw" : 420, "disph" : 480, "actareay" : 320, "actareaw" : 420, "actareah" : 280}       
+        self.info = {"tiletype" : tiletype, "surface" : surface, "x" : 160, "y" : 80, "index" : index, "colour" :colour , "seam" : 80, "inner" : 40, "titlesize" : 100, "spanx" : 960, "spany" : 560, "innerx" : 200, "innery" : 120, "inspanx" : 880, "inspany" : 480, "lineposy" : 240, "aaspanx" : 420, "dispposx" : 660, "dispw" : 420, "disph" : 480, "actareay" : 320, "actareaw" : 420, "actareah" : 280}       
         self.info["tilejump"] = self.info["seam"] + self.info["spanx"]
 
         if self.info["index"] > 0:
@@ -353,52 +427,37 @@ class Tile(object):
         print("keydown received!")
         self.actionarea.downkey()
         
+    def enterkey(self):
+        #receives enter key and passes it to action area
+        self.actionarea.enterkey()
+
+    
     def drawlayout(self):
         # the following checks what type of tile this is and draws elements accordingly.
-        
-        if self.info["tiletype"] == 0:
             #self.actarea = actionarea(0,self.info["surface"])
             self.disparea.draw(self.info)
             self.actionarea.draw(self.info)
-        
-        if self.info["tiletype"] == 1:
-            self.disparea.draw(self.info)
-            self.actionarea.draw(self.info)
-        
-        if self.info["tiletype"] == 2:
-            self.disparea.draw(self.info)
-        
-        if self.info["tiletype"] == 3:
-            self.disparea.draw(self.info)
-        
-        if self.info["tiletype"] == 4:
-            self.disparea.draw(self.info)
+
                     
     def updatelayout(self):
         # the following checks what kind of tile this is and updates the layout accordingly
         if self.info["tiletype"] == 0:
             self.title = "Home"
-            #self.actarea = actionarea(0,self.info["surface"])
-            self.disparea = displayarea(self.info)
-            self.actionarea = actionarea(self.info)
-        
+
         if self.info["tiletype"] == 1:
             self.title = "System"
-            self.disparea = displayarea(self.info)
-            self.actionarea = actionarea(self.info)
-                
         
         if self.info["tiletype"] == 2:
             self.title = "Assistant"
-            self.disparea = displayarea(self.info)
         
         if self.info["tiletype"] == 3:
             self.title = "Notes"
-            self.disparea = displayarea(self.info)
         
         if self.info["tiletype"] == 4:
             self.title = "RSS"
-            self.disparea = displayarea(self.info)
+            
+        self.disparea = displayarea(self.info)
+        self.actionarea = actionarea(self.info)
             
     def update(self):
         pass
