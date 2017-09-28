@@ -190,10 +190,10 @@ while(status != "quit"):
         if page > selectorAdj:
             page = page - speed
         
-    print("selector adjust is:")    
-    print(selectorAdj)
-    print("page is:")
-    print(page)
+    #print("selector adjust is:")    
+    #print(selectorAdj)
+    #print("page is:")
+    #print(page)
     #print(page)
 
     
@@ -249,6 +249,8 @@ while(status != "quit"):
                 tilelist[keyinto].downkey()
             if event.key == pygame.K_UP:
                 tilelist[keyinto].upkey()
+            if event.key == pygame.K_RETURN:
+                tilelist[keyinto].enterkey()
             if event.key == pygame.K_q:
                 pygame.quit()
                 quit()

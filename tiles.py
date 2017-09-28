@@ -230,9 +230,10 @@ class actionarea(object):
         self.selectoralign()
     
     def enterkey(self):
+        return self.selector
         # when receives key down send action area message who will send display area a message?
         # maybe just send message to display area directly?
-        pass
+
         
     def getdatetime(self):
         date = datetime.today()
@@ -336,6 +337,19 @@ class displayarea(object):
         self.selector -= 1
         self.selectoralign()
         
+    def enterkey(self,selection):
+        # this function defines the behaviour of the display area when the enter key is pressed. 
+        # It determines what type of tile it is and what the selected function is, because of the diversity
+        # of tiles it will require a lot of different selections to be defined
+
+        # if this is a notes tile.
+        if self.type == 3:
+            if selection == 2:
+                self.selector += 1
+            if selection == 1:
+                self.selector -= 1
+
+
     def selectoralign(self):
         if self.selector > 4:
             self.selector = 4
@@ -420,16 +434,17 @@ class Tile(object):
         self.updatelayout()
 
     def upkey(self):
-        print("keyupped!")
+#        print("keyupped!")
         self.actionarea.upkey()
         
     def downkey(self):
-        print("keydown received!")
+#        print("keydown received!")
         self.actionarea.downkey()
         
     def enterkey(self):
         #receives enter key and passes it to action area
-        self.actionarea.enterkey()
+        selection = self.actionarea.enterkey()
+        self.disparea.enterkey(selection)
 
     
     def drawlayout(self):
