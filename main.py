@@ -244,8 +244,6 @@ while(status != "quit"):
                 if selector > 4:
                     selector = 4
             if event.key == pygame.K_DOWN:
-                print("kedowned")
-                print(keyinto)
                 tilelist[keyinto].downkey()
             if event.key == pygame.K_UP:
                 tilelist[keyinto].upkey()

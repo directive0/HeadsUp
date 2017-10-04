@@ -14,6 +14,7 @@ import time
 from datetime import datetime
 from getvitals import *
 from filehandling import *
+from textrect import *
 
 # Here are some basic colours we can call on.
 background = (38,38,38)
@@ -158,10 +159,26 @@ class Label(object):
         self.myfont = pygame.font.Font(fontType, self.fontSize)
         self.color = color
         
+    def center(self,w,h,x,y):
+        size = self.getrect()
+        xmid = x + w/2
+        ymid = y + h/2
+        textposx = xmid - (size[0]/2)
+        textposy = ymid - (size[1]/2)
+        self.update(self.content,self.fontSize,textposx,textposy,titleFont,self.color)
+    
+    def paragraph(self):
+        
+        my_rect = pygame.Rect((0, 0, 804, 366))
+    
+        rendered_text = render_textrect(self.content, self.myfont, my_rect, textc, buttonc, 0)
+        return rendered_text
+        
     def getrect(self):
         label = self.myfont.render(self.content, 1, self.color)
         textw = label.get_width()
         texth = label.get_height()
+        
         return textw,texth
         
     def draw(self, surface):
@@ -204,6 +221,35 @@ class Box(object):
         rect = pygame.Rect((self.x,self.y), self.size)
         pygame.draw.rect(surface, self.color, rect)
 
+class viewingarea(object):
+    def __init__(self, content, info):
+        self.content = content
+        self.info = info
+        self.textarea = Label()
+        self.surface = self.info["surface"]
+        self.substrate = Box()
+        self.substrate.update(200,120,(880, 440),buttonc)
+    
+    def drawbutton(self,y,content):
+        butxmid = self.info["dispbx"] + (self.info["dispw"] / 2)  
+        butymid = y + (40 / 2)  
+        self.drawblock(y,40)
+        butlabel = Label()
+        butlabel.update(content,26,butxmid,y,titleFont,textc)
+        size = butlabel.getrect()
+        butlabel.center(self.info["dispw"],40,self.info["dispbx"],y)
+        #textposx = butxmid - (size[0]/2)
+        #textposy = butymid - (size[1]/2)qq
+        
+        #butlabel.update(content,26,textposx,textposy,titleFont,textc)
+        butlabel.draw(self.surface)
+    
+    def draw(self):
+        self.substrate.draw(self.surface)
+        self.textarea.update(self.content,26,0,0,titleFont,textc)
+        self.surface.blit(self.textarea.paragraph(), (240,160))
+        
+
 class actionarea(object):
     def __init__(self,info):
         self.info = info
@@ -211,13 +257,14 @@ class actionarea(object):
         self.surface = self.info["surface"]
         self.type = self.info["tiletype"]
         self.selector = 0
+        self.selectmax = 5
     
     def outline(self,xLeft,xRight,yTop,yBottom,line):
         pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)
         
     def selectoralign(self):
-        if self.selector > 4:
-            self.selector = 4
+        if self.selector > self.selectmax:
+            self.selector = self.selectmax
         if self.selector < 0:
             self.selector = 0
             
@@ -300,22 +347,34 @@ class actionarea(object):
         # draw system screen actionable buttons and highlight    
         if self.type == 1:
             buttontexts = ["Shutdown","Reboot","Toggle Wifi", "Toggle Bluetooth", "Quit HeadsUP"]
-            
+            self.selectmax = 4
+            for i in range(5):
+                
+                ypos = self.info["actareay"] + (60*i)
+                self.drawbutton(ypos,buttontexts[i])
+                if i == self.selector:
+                    self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
+        
+        if self.type == 2:
+            buttontexts = ["Invoke Assistant", "Toggle Hotword"]
+            self.selectmax = 1
+            for i in range(2):
+                
+                ypos = self.info["actareay"] + (60*i)
+                self.drawbutton(ypos,buttontexts[i])
+                if i == self.selector:
+                    self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
+        
+        # Define layout for Notes Tiles
+        if self.type == 3:
+            buttontexts = ["View","Up","Down", "Refresh List", "Delete"]
+            self.selectmax = 4
             for i in range(5):
                 ypos = self.info["actareay"] + (60*i)
                 self.drawbutton(ypos,buttontexts[i])
                 if i == self.selector:
                     self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
 
-        # Define layout for Notes Tiles
-        if self.type == 3:
-            buttontexts = ["View","Up","Down", "Refresh List", "Delete"]
-        
-            for i in range(5):
-                ypos = self.info["actareay"] + (60*i)
-                self.drawbutton(ypos,buttontexts[i])
-                if i == self.selector:
-                    self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
 
     
 class displayarea(object):
@@ -337,7 +396,7 @@ class displayarea(object):
         self.selector -= 1
         self.selectoralign()
         
-    def enterkey(self,selection):
+    def enterkey(self,selection,target):
         # this function defines the behaviour of the display area when the enter key is pressed. 
         # It determines what type of tile it is and what the selected function is, because of the diversity
         # of tiles it will require a lot of different selections to be defined
@@ -348,6 +407,15 @@ class displayarea(object):
                 self.selector += 1
             if selection == 1:
                 self.selector -= 1
+            if selection == 0:
+                item = self.folist[self.selector]
+                print(item)
+                fs = files()
+                notetext = fs.getitem(item)
+                target.viewit(notetext)
+                
+        # if viewing area selected collect image or text for viewing and instantiate a viewarea object with that data.
+        
 
 
     def selectoralign(self):
@@ -370,10 +438,11 @@ class displayarea(object):
         butlabel = Label()
         butlabel.update(content,26,butxmid,y,titleFont,textc)
         size = butlabel.getrect()
-        textposx = butxmid - (size[0]/2)
-        textposy = butymid - (size[1]/2)
+        butlabel.center(self.info["dispw"],40,self.info["dispbx"],y)
+        #textposx = butxmid - (size[0]/2)
+        #textposy = butymid - (size[1]/2)qq
         
-        butlabel.update(content,26,textposx,textposy,titleFont,textc)
+        #butlabel.update(content,26,textposx,textposy,titleFont,textc)
         butlabel.draw(self.surface)
         
     def draw(self,info):
@@ -391,11 +460,9 @@ class displayarea(object):
             #self.graphassign(2)
 #           graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
             data = sensorget()
-
             for i in range(2):
                 ypos = self.info["innery"] + (260 * i)
                 self.drawblock(ypos,220)
-                
             self.graph.update(self.surface,data['cpuperc'],0,100,textc)
             self.graph2.update(self.surface,data['ramperc'],0,100,textc)
     
@@ -406,10 +473,10 @@ class displayarea(object):
 #           graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
             notes = files()
             
-            folist = notes.ListText()
-            count= len(folist)
+            self.folist = notes.ListText()
+            count= len(self.folist)
             for i in range(count):
-                caption = str(folist[i])
+                caption = str(self.folist[i])
                 ypos = self.info["innery"] + (60 * i)
                 self.drawbutton(ypos,caption)
                 if i == self.selector:
@@ -432,7 +499,8 @@ class Tile(object):
         self.info["size"] = (self.info["spanx"],self.info["spany"])
         self.info["innersize"] = (self.info["inspanx"],self.info["inspany"])
         self.updatelayout()
-
+        self.viewing = False
+        
     def upkey(self):
 #        print("keyupped!")
         self.actionarea.upkey()
@@ -443,16 +511,32 @@ class Tile(object):
         
     def enterkey(self):
         #receives enter key and passes it to action area
-        selection = self.actionarea.enterkey()
-        self.disparea.enterkey(selection)
+        if self.viewing:
+            self.viewing = False
+        else:
+            selection = self.actionarea.enterkey()
+            self.disparea.enterkey(selection,self)
 
+    def viewit(self, item):
+        print(item)
+        self.viewing = True
+        self.item = item
+        self.viewframe = viewingarea(self.item,self.info)
     
     def drawlayout(self):
-        # the following checks what type of tile this is and draws elements accordingly.
+        # the following checks what type of tile this is and draws elements accordingly. If there is a viewframe event triggered it draws that, if not it draws the standard layout.
             #self.actarea = actionarea(0,self.info["surface"])
-            self.disparea.draw(self.info)
-            self.actionarea.draw(self.info)
-
+            if self.viewing:
+                self.viewframe.draw()
+                
+            else:
+                title = Label()
+                title.update(self.title,self.info["titlesize"],self.info["innerx"],self.info["innery"],titleFont,textc)
+                title.draw(self.info["surface"])
+                pygame.draw.lines(self.info["surface"], textc, False, ((self.info["innerx"], self.info["lineposy"]),((self.info["innerx"] + self.info["aaspanx"]), self.info["lineposy"])), 6)
+                self.disparea.draw(self.info)
+                self.actionarea.draw(self.info)
+    
                     
     def updatelayout(self):
         # the following checks what kind of tile this is and updates the layout accordingly
@@ -505,16 +589,14 @@ class Tile(object):
             pygame.draw.rect(self.info["surface"], self.info["colour"], self.rect)
 
             #draw the foreground elements of the tile.
-            title = Label()
-            title.update(self.title,self.info["titlesize"],self.info["innerx"],self.info["innery"],titleFont,textc)
-            title.draw(self.info["surface"])
+
         
             # draw display area to right
             # self.disparea.draw(self.info["dispbx"],self.info["innery"],(self.info["dispw"],self.info["disph"]))
             self.drawlayout()
         
             # draw horizontal line 
-            pygame.draw.lines(self.info["surface"], textc, False, ((self.info["innerx"], self.info["lineposy"]),((self.info["innerx"] + self.info["aaspanx"]), self.info["lineposy"])), 6)
+
             # draw action area
         else:
             # if not in focus just makes the tile dark grey.

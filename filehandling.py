@@ -21,7 +21,14 @@ class files(object):
 
     def CD(self,path):
         os.chdir(path)
-        
+    
+    def getitem(self,target):
+        target = str("./notes/"+target)
+        item = os.open(target, os.O_RDWR|os.O_CREAT)
+        ret = os.read(item,1024)
+        return ret
+
+    
     def ListDir(self):
         # something I found. It parses a list of the items present in a directory and only adds the subdirectories to the list. Returns that list.
         
@@ -38,6 +45,7 @@ class files(object):
             if file.endswith(".txt"):
                 textlist.append(file)
         return textlist
+        
     def Open(self, item):
         #element should be passed a filename and use its current directory 
         
