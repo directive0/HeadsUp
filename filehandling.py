@@ -25,7 +25,7 @@ class files(object):
     def getitem(self,target):
         target = str("./notes/"+target)
         item = os.open(target, os.O_RDWR|os.O_CREAT)
-        ret = os.read(item,1024)
+        ret = os.read(item,10000)
         return ret
 
     

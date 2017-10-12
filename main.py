@@ -1,7 +1,13 @@
 #!/usr/bin/env python
-# HeadsUp Mark 3 -  Tiles that serve information to headsup displays
+# HeadsUp Mark 5 -  Tiles that serve information to headsup displays
 # Code by C.Barrett
 # Designed by S.Caem
+
+# Exciting developments:
+# Text reading works!!
+# 
+
+
 
 # First we import all the modules necessary for this project.
 import pygame
@@ -235,14 +241,21 @@ while(status != "quit"):
         elif event.type == pygame.KEYDOWN:
             # if it was left decrement the selector
             if event.key == pygame.K_LEFT:
-                selector -= 1
-                if selector < 0:
-                    selector = 0
+                if tilelist[keyinto].isview():
+                    tilelist[keyinto].leftkey()
+                else:
+                    selector -= 1
+                    if selector < 0:
+                        selector = 0
             # if it was right increment the selector
             if event.key == pygame.K_RIGHT:
-                selector += 1
-                if selector > 4:
-                    selector = 4
+                if tilelist[keyinto].isview():
+                    tilelist[keyinto].rightkey()
+                else:
+                    selector += 1
+                    if selector > 4:
+                        selector = 4
+                        
             if event.key == pygame.K_DOWN:
                 tilelist[keyinto].downkey()
             if event.key == pygame.K_UP:

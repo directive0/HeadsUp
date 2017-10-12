@@ -167,11 +167,16 @@ class Label(object):
         textposy = ymid - (size[1]/2)
         self.update(self.content,self.fontSize,textposx,textposy,titleFont,self.color)
     
-    def paragraph(self):
+    def pageup(self):
+        pass
+        
+    def paragraph(self,page):
         
         my_rect = pygame.Rect((0, 0, 804, 366))
     
-        rendered_text = render_textrect(self.content, self.myfont, my_rect, textc, buttonc, 0)
+        self.text = TextBlock()
+        
+        rendered_text = self.text.render_textrect(self.content, self.myfont, my_rect, textc, buttonc, page,0)
         return rendered_text
         
     def getrect(self):
@@ -229,26 +234,75 @@ class viewingarea(object):
         self.surface = self.info["surface"]
         self.substrate = Box()
         self.substrate.update(200,120,(880, 440),buttonc)
+        self.selector = 0
+        self.selectmax = 2
+        self.page = 0
+        
+    def rightkey(self):
+        self.selector += 1
+        self.selectalign()
+        
+    def leftkey(self):
+        self.selector -= 1
+        self.selectalign()
+        
+    def enterkey(self,tile):
+        if self.selector == 0:
+            tile.stopview()
+        elif self.selector == 1:
+            self.page -=1
+            if self.page <= 0:
+                self.page = 0
+        elif self.selector == 2:
+            self.page +=1
+            
+    def selectalign(self):
+        if self.selector > self.selectmax:
+            self.selector = self.selectmax
+        
+        if self.selector < 0:
+            self.selector = 0
     
-    def drawbutton(self,y,content):
-        butxmid = self.info["dispbx"] + (self.info["dispw"] / 2)  
-        butymid = y + (40 / 2)  
-        self.drawblock(y,40)
+    def drawbutton(self,x,content):
+        #defines center of button
+        y = 400
+        
+        butymid =  y + (40 / 2)  
+        
+        butxmid = x + 180 / 2
+        
+        # draws button backplane
+        rect = pygame.Rect(x,580,180,40)
+        pygame.draw.rect(self.surface, buttonc, rect)
+        
+        # instantiates a label object.
         butlabel = Label()
         butlabel.update(content,26,butxmid,y,titleFont,textc)
         size = butlabel.getrect()
-        butlabel.center(self.info["dispw"],40,self.info["dispbx"],y)
+        butlabel.center(180,40,x,580)
+        butlabel.center(180,40,x,580)
         #textposx = butxmid - (size[0]/2)
         #textposy = butymid - (size[1]/2)qq
         
         #butlabel.update(content,26,textposx,textposy,titleFont,textc)
         butlabel.draw(self.surface)
+        
+    def outline(self,xLeft,xRight,yTop,yBottom,line):
+        pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)
     
     def draw(self):
         self.substrate.draw(self.surface)
         self.textarea.update(self.content,26,0,0,titleFont,textc)
-        self.surface.blit(self.textarea.paragraph(), (240,160))
-        
+        self.surface.blit(self.textarea.paragraph(self.page), (240,160))
+        labels = ["Exit","Previous","Next"]
+        for i in range (3):
+            label = labels[i]
+            xgo = 200 + (200 * i)
+            self.drawbutton(xgo, label)
+            if i == self.selector:
+                self.outline(xgo,(xgo+180),580,(580+40),3)
+
+    
 
 class actionarea(object):
     def __init__(self,info):
@@ -258,7 +312,7 @@ class actionarea(object):
         self.type = self.info["tiletype"]
         self.selector = 0
         self.selectmax = 5
-    
+
     def outline(self,xLeft,xRight,yTop,yBottom,line):
         pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)
         
@@ -395,7 +449,8 @@ class displayarea(object):
     def upkey(self):
         self.selector -= 1
         self.selectoralign()
-        
+    
+
     def enterkey(self,selection,target):
         # this function defines the behaviour of the display area when the enter key is pressed. 
         # It determines what type of tile it is and what the selected function is, because of the diversity
@@ -409,7 +464,7 @@ class displayarea(object):
                 self.selector -= 1
             if selection == 0:
                 item = self.folist[self.selector]
-                print(item)
+                
                 fs = files()
                 notetext = fs.getitem(item)
                 target.viewit(notetext)
@@ -500,6 +555,8 @@ class Tile(object):
         self.info["innersize"] = (self.info["inspanx"],self.info["inspany"])
         self.updatelayout()
         self.viewing = False
+
+        
         
     def upkey(self):
 #        print("keyupped!")
@@ -512,10 +569,26 @@ class Tile(object):
     def enterkey(self):
         #receives enter key and passes it to action area
         if self.viewing:
-            self.viewing = False
+           self.viewframe.enterkey(self)
         else:
             selection = self.actionarea.enterkey()
             self.disparea.enterkey(selection,self)
+    
+    def leftkey(self):
+        self.viewframe.leftkey()
+
+    def rightkey(self):
+        self.viewframe.rightkey()
+    
+    
+    def isview(self):
+        if self.viewing:
+            return True
+        else:
+            return False
+            
+    def stopview(self):
+        self.viewing = False
 
     def viewit(self, item):
         print(item)
