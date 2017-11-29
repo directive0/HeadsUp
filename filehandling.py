@@ -5,7 +5,7 @@ import os
 
 #read the contents of folder and return it as a list
 #open and change directory
-#
+
 
 
 class files(object):

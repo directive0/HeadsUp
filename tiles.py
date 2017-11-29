@@ -2,10 +2,6 @@
 # Code by C.Barrett
 # Design by S.Caem
 
-# To do 
-# Integrate file system 
-# integrate Notes
-# integrat 
 
 import pygame
 import pygame.gfxdraw
@@ -45,12 +41,6 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
     # Convert the 0-1 range into a value in the right range.
     return rightMin + (valueScaled * rightSpan)
 
-def gettextsize():
-    # give it a string
-    # give it a size
-    # return the width required for that text.
-    pass
-    
     
     
 # the following class draws graphs with or without outlines and updates values everytime it is called.
@@ -171,21 +161,21 @@ class Label(object):
         pass
         
     def paragraph(self,page):
-        
+
         my_rect = pygame.Rect((0, 0, 804, 366))
-    
+
         self.text = TextBlock()
-        
+
         rendered_text = self.text.render_textrect(self.content, self.myfont, my_rect, textc, buttonc, page,0)
         return rendered_text
-        
+
     def getrect(self):
         label = self.myfont.render(self.content, 1, self.color)
         textw = label.get_width()
         texth = label.get_height()
-        
+
         return textw,texth
-        
+
     def draw(self, surface):
         label = self.myfont.render(self.content, 1, self.color)
         surface.blit(label, (self.x, self.y))
@@ -331,6 +321,11 @@ class actionarea(object):
         self.selectoralign()
     
     def enterkey(self):
+        
+        if self.selector ==  4:
+            if self.type == 1:
+                print("quit received")
+                return "quit"
         return self.selector
         # when receives key down send action area message who will send display area a message?
         # maybe just send message to display area directly?
@@ -554,6 +549,9 @@ class Tile(object):
         self.info["size"] = (self.info["spanx"],self.info["spany"])
         self.info["innersize"] = (self.info["inspanx"],self.info["inspany"])
         self.updatelayout()
+        
+        
+        #the following variable is used to determine whether the current tile is using a viewframe to display content and if so controls are different
         self.viewing = False
 
         
@@ -566,13 +564,23 @@ class Tile(object):
 #        print("keydown received!")
         self.actionarea.downkey()
         
-    def enterkey(self):
+    def enterkey(self,status):
         #receives enter key and passes it to action area
         if self.viewing:
            self.viewframe.enterkey(self)
         else:
             selection = self.actionarea.enterkey()
+            
+            if selection == "quit":
+                print("quit also received")
+                status = "quit"
             self.disparea.enterkey(selection,self)
+                
+            if status == "quit":
+                print("returning status")
+                return status
+
+
     
     def leftkey(self):
         self.viewframe.leftkey()
@@ -662,15 +670,9 @@ class Tile(object):
             pygame.draw.rect(self.info["surface"], self.info["colour"], self.rect)
 
             #draw the foreground elements of the tile.
-
-        
-            # draw display area to right
-            # self.disparea.draw(self.info["dispbx"],self.info["innery"],(self.info["dispw"],self.info["disph"]))
+            # draw both the display area and the action area
             self.drawlayout()
         
-            # draw horizontal line 
-
-            # draw action area
         else:
             # if not in focus just makes the tile dark grey.
             self.rect = pygame.Rect(self.info["pos"], self.info["size"])

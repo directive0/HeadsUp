@@ -1,5 +1,15 @@
 #! /usr/bin/env python
 
+"""
+
+    I shamelessly stole this from here:
+    
+    Original Author: David Clark (da_clark at shaw.ca)
+
+    http://www.pygame.org/pcr/text_rect/index.php
+    
+"""
+
 class TextRectException:
     def __init__(self, message = None):
         self.message = message

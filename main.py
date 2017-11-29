@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# HeadsUp Mark 5 -  Tiles that serve information to headsup displays
+# HeadsUp Mark 6 -  Tiles that serve information to headsup displays
 # Code by C.Barrett
 # Designed by S.Caem
 
 # Exciting developments:
 # Text reading works!!
-# 
+# File handling appears to be operating
 
 
 
@@ -176,7 +176,7 @@ interval = timer()
 graphtime = timer()
 
 #need to find a way to move tiles using integers
-
+messageback = "none"
 
 while(status != "quit"):
 
@@ -222,14 +222,11 @@ while(status != "quit"):
     #draw our indicator circles.
     indicator1.draw(selector)
     
+    # define the midpoint of the screen.
     mid = 1280/2
-    
-    # draws a centerline
-    #pygame.draw.lines(surface, textc, False, ((mid,0),(mid,720)), 1)
     
     
     # puke all those pixels to screen.
-    #print(page)
     pygame.display.flip()
     keyinto = int(float(page) / 100)
     # input control handling. Get a list of most recent events.
@@ -261,24 +258,15 @@ while(status != "quit"):
             if event.key == pygame.K_UP:
                 tilelist[keyinto].upkey()
             if event.key == pygame.K_RETURN:
-                tilelist[keyinto].enterkey()
+                messageback = tilelist[keyinto].enterkey(status)
             if event.key == pygame.K_q:
                 pygame.quit()
                 quit()
-    
-    pygame.time.wait(30)
-    
-    # this next item checks to see if the q key was pressed 
-    #key = pygame.key.get_pressed()
-    
-    #if key[pygame.K_RIGHT]:
-        #selector += 1
-    #if key[pygame.K_LEFT]:
-        #selector -= 1
-        
-    #if key[pygame.K_q]:
 
-        #status = "quit"
-    #else:
-        ## otherwise it updates the status by calling on the startUp function, which is passed our pygame display object, and the time since we booted our program.
-        #status = "go!"
+    if messageback == "quit":
+        print("messageback received")
+        pygame.quit()
+        quit()
+
+    pygame.time.wait(30)
+
