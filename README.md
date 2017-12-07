@@ -44,7 +44,7 @@ In order to use IFTTT triggers from the IFTTT tile you need to create a text fil
 
 1234556789101112,trigger
 
-Name the text file what you want the button to be labelled that activates it; "Turn on lights.txt" for example.
+Name the text file what you want the button to be labelled that activates it; "Turn on lights.txt" for example and make a folder in the HeadsUp directory called "triggers". Put the text file in the folder named "triggers"
 
 Do not add any extra information to the text file or any extra lines or else it will not work.
 
