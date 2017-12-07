@@ -1,12 +1,15 @@
 #!/usr/bin/env python
-# HeadsUp Mark 6 -  Tiles that serve information to headsup displays
+
+"""
+# HeadsUp Mark 7 -  Tiles that serve information to a headsup display, send and recieve arbitrary IFTTT 
 # Code by C.Barrett
 # Designed by S.Caem
 
 # Exciting developments:
-# Text reading works!!
-# File handling appears to be operating
+# -Nothing to report.
 
+
+"""
 
 
 # First we import all the modules necessary for this project.
@@ -18,7 +21,7 @@ from tiles import *
 # This module will be useful when I reinstate system vitals.
 
 # Initiate Pygame and the Font engine.
-pygame.init()
+pygame.display.init()
 pygame.font.init()
 
 
@@ -42,6 +45,25 @@ pygame.display.set_caption('HeadsUp')
 # Set the state value.
 status = "go!"
 
+# define the screensize as a tuple (two number set)
+ScreenX,ScreenY = screenSize
+
+# create a list to hold our tile objects
+tilelist = []
+
+# This number determines the number of tiles
+notiles = 6
+
+
+
+page = 0
+selector = 0
+speed = 20
+director = 0
+
+
+#need to find a way to move tiles using integers
+messageback = "none"
 
 # this is a function that returns text at the proper dimensions to fit a rectangle.
 def dynamic_font(text, name, size, color, width, aa=True, dec_by=1):
@@ -98,12 +120,13 @@ class Indicator(object):
             # the center point of each circle along the X is the product of half the screen size minus half the size of the widget plus the radius of the circle.
             circlex = (1280 / 2) - (self.spanX / 2) + adjust + self.rad
             
+            circlex = int(circlex)
             circley = int(self.centerposy)
             
             
             pygame.gfxdraw.aacircle(self.surface,circlex,circley,int(self.rad),indicolours[i])
             pygame.gfxdraw.filled_circle(self.surface,circlex,circley,int(self.rad),indicolours[i])
-        
+
 def center(text,font,size):
     pass
     
@@ -154,29 +177,19 @@ def vitalshow():
     ramlabel.update("RAM % = " + info['ramperc'],50,84,370,titleFont,red)
     ramlabel.draw(surface)
 
-# define the screensize as a tuple (two number set)
-ScreenX,ScreenY = screenSize
 
-# create a list to hold our tile objects
-tilelist = []
-notiles = 5
 # for loop to create our tiles and put them in our list of tiles
 for i in range(notiles):
     tile = Tile(i,surface,screenSize,background,i)
     tilelist.append(tile)
 
+        
 # we make an indicator object.    
 indicator1 = Indicator(surface,screenSize,notiles)
 
-page = 0
-selector = 0
-speed = 20
-director = 0
+# the following objects control interval timing for the graphs and something else... I think? hmmmmm.
 interval = timer()
 graphtime = timer()
-
-#need to find a way to move tiles using integers
-messageback = "none"
 
 while(status != "quit"):
 
@@ -250,8 +263,8 @@ while(status != "quit"):
                     tilelist[keyinto].rightkey()
                 else:
                     selector += 1
-                    if selector > 4:
-                        selector = 4
+                    if selector > (notiles - 1):
+                        selector = (notiles - 1)
                         
             if event.key == pygame.K_DOWN:
                 tilelist[keyinto].downkey()

@@ -10,7 +10,7 @@
     
 """
 
-class TextRectException:
+class TextRectException():
     def __init__(self, message = None):
         self.message = message
     def __str__(self):
@@ -55,11 +55,12 @@ class TextBlock(object):
     
         for requested_line in requested_lines:
             if font.size(requested_line)[0] > rect.width:
+                
                 words = requested_line.split(' ')
                 # if any of our words are too long to fit, return.
                 for word in words:
                     if font.size(word)[0] >= rect.width:
-                        raise TextRectException, "The word " + word + " is too long to fit in the rect passed."
+                        raise TextRectException
                 # Start a new line
                 accumulated_line = ""
                 for word in words:
@@ -92,11 +93,11 @@ class TextBlock(object):
         nolines = len(final_lines)
         
         # the following dealy splits the strings up into groups of 15 so we can view them as pages. The variable "pagenum" lets us know where we are.
-        print "length is: " + str(len(final_lines))
+
         if len(final_lines) > 14:
             for i in range(14):
                 target = page + (i)
-                print "line number is: " + str(target)
+
                 if target >= len(final_lines):
                     pass
                 else:
@@ -106,7 +107,7 @@ class TextBlock(object):
         
         for line in final_lines: 
             if accumulated_height + font.size(line)[1] >= rect.height:
-                raise TextRectException, "Once word-wrapped, the text string was too tall to fit in the rect."
+                raise TextRectException
             if line != "":
                 tempsurface = font.render(line, 1, text_color)
                 if justification == 0:
@@ -116,7 +117,7 @@ class TextBlock(object):
                 elif justification == 2:
                     surface.blit(tempsurface, (rect.width - tempsurface.get_width(), accumulated_height))
                 else:
-                    raise TextRectException, "Invalid justification argument: " + str(justification)
+                    raise TextRectException
             accumulated_height += font.size(line)[1]
     
         return surface

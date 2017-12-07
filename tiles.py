@@ -11,6 +11,8 @@ from datetime import datetime
 from getvitals import *
 from filehandling import *
 from textrect import *
+from ifttt import *
+#from main import tileTitles
 
 # Here are some basic colours we can call on.
 background = (38,38,38)
@@ -28,6 +30,9 @@ black = (0,0,0)
 white = (255,255,255)
 # Here is the location of our font.
 titleFont = "assets/font.ttf"
+
+tileTitles = ("Home","System","IFTTT","Notes","Images","Sensors")
+
 
 # the following function maps a value from the target range onto the desination range
 def translate(value, leftMin, leftMax, rightMin, rightMax):
@@ -66,8 +71,9 @@ class GraphLine(object):
     def grablist(self):
         
         self.glist = []
-
-        for i in range(self.xSpan):
+        
+        test = int(self.xSpan)
+        for i in range(test):
             self.glist.append(self.yBottom)
             
         return self.glist
@@ -85,7 +91,8 @@ class GraphLine(object):
         linepoint = self.xLeft
         jump = 1      
         self.newlist = []
-        for i in range(self.xSpan):
+        test = int(self.xSpan)
+        for i in range(test):
             self.newlist.append((linepoint,list[i]))
             linepoint = linepoint + jump
     
@@ -139,8 +146,9 @@ class Label(object):
         self.myfont = pygame.font.Font(titleFont, self.fontSize)
         text = "hello"
         self.size = self.myfont.size(text)
+        self.scaler = 3
 
-        
+
     def update(self, content, fontSize, nx, ny, fontType, color):
         self.x = nx
         self.y = ny
@@ -148,25 +156,40 @@ class Label(object):
         self.fontSize = fontSize
         self.myfont = pygame.font.Font(fontType, self.fontSize)
         self.color = color
-        
+
+
+    def left(self,w,h,x,y):
+        size = self.getrect()
+        xmid = x + 40
+        ymid = y + h/2
+        textposx = xmid
+        textposy = ymid - (size[1]/2) + self.scaler
+        self.update(self.content,self.fontSize,textposx,textposy,titleFont,self.color)
+
+
     def center(self,w,h,x,y):
         size = self.getrect()
         xmid = x + w/2
         ymid = y + h/2
         textposx = xmid - (size[0]/2)
-        textposy = ymid - (size[1]/2)
+        textposy = ymid - (size[1]/2) + self.scaler
         self.update(self.content,self.fontSize,textposx,textposy,titleFont,self.color)
-    
+
+
     def pageup(self):
         pass
-        
+
+
+
     def paragraph(self,page):
 
         my_rect = pygame.Rect((0, 0, 804, 366))
 
         self.text = TextBlock()
-
+    
+        # this next function returns a block of text rendered for the screen.
         rendered_text = self.text.render_textrect(self.content, self.myfont, my_rect, textc, buttonc, page,0)
+        
         return rendered_text
 
     def getrect(self):
@@ -342,22 +365,34 @@ class actionarea(object):
         self.dayno = datelist[2]
         self.year = datelist[4]
         self.date = self.day + " - " + str(self.dayno) + "/" + str(self.month) + "/" + str(self.year)
+    
+    def wifiname(self):
+        wifiname = getwifi()
+        return wifiname
         
     def drawblock(self,y,h):
         rect = pygame.Rect((self.info["innerx"],y), (self.info["actareaw"],h))
         pygame.draw.rect(self.surface, buttonc, rect)
         
     def drawbutton(self,y,content):
+        # the x mid point of the button is the distance of the x coordinate of the button plus the span of the button divided by 2
         butxmid = self.info["innerx"] + (self.info["aaspanx"] / 2)  
-        butymid = y + (40 / 2)  
-        self.drawblock(y,40)
-        butlabel = Label()
-        butlabel.update(content,26,butxmid,y,titleFont,textc)
-        size = butlabel.getrect()
-        textposx = butxmid - (size[0]/2)
-        textposy = butymid - (size[1]/2)
         
-        butlabel.update(content,26,textposx,textposy,titleFont,textc)
+        # the y mid point of the button is the distance of the y coordinate of the button plus the height of the button divided by 2
+        butymid = y + (40 / 2)  
+        
+        # draw the rectangle to screen
+        self.drawblock(y,40)
+        
+        # instantiate a text object
+        butlabel = Label()
+        # update the content of the text object.
+        butlabel.update(content,26,butxmid,y,titleFont,textc)
+        
+        #center the text on the button
+        butlabel.center(self.info["actareaw"],40,self.info["innerx"],y)
+
+        # draw the text.
         butlabel.draw(self.surface)
         
     def draw(self,info):
@@ -379,19 +414,33 @@ class actionarea(object):
             
             # instantiate the label for the time line
             timel = Label()
+            timely = self.info["actareay"]
             timel.update(self.time,26,(self.info["innerx"]+155),(self.info["actareay"]+7),titleFont,textc)
-            size = timel.getrect()
-            labelpos = self.info["innerx"]+(self.info["aaspanx"]/2)-(size[0]/2)
-            timel.update(self.time,26,labelpos,(self.info["actareay"]+7),titleFont,textc)
+ 
+
+            timel.center(self.info["aaspanx"],40,self.info["innerx"],timely)
             timel.draw(self.surface)
             
             # instantiate the label for the date line
             datel = Label()
+            datey = self.info["actareay"]+38
             datel.update(self.date,26,(self.info["innerx"]+92),(self.info["actareay"]+40),titleFont,textc)
             size = datel.getrect()
             labelpos = self.info["innerx"]+(self.info["aaspanx"]/2)-(size[0]/2)
-            datel.update(self.date,26,labelpos,(self.info["actareay"]+40),titleFont,textc)
+
+            datel.center(self.info["aaspanx"],40,self.info["innerx"],datey)
             datel.draw(self.surface)
+            
+
+            
+            # instantiate the label for the time line
+            wifi = Label()
+            wifiname = self.wifiname()
+            wifiy = self.info["actareay"] + 180
+            wifi.update(wifiname,26,(self.info["innerx"]+155),(self.info["actareay"]+7),titleFont,textc)
+            
+            wifi.center(self.info["aaspanx"],40,self.info["innerx"],wifiy)
+            wifi.draw(self.surface)
             
         # draw system screen actionable buttons and highlight    
         if self.type == 1:
@@ -404,15 +453,21 @@ class actionarea(object):
                 if i == self.selector:
                     self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
         
+        # draw IFTT buttons
         if self.type == 2:
-            buttontexts = ["Invoke Assistant", "Toggle Hotword"]
-            self.selectmax = 1
-            for i in range(2):
+            
+            buttontexts = ["Engage", "Up","Down","Refresh List", "Delete"]
+            self.selectmax = 4
+            for i in range(5):
                 
                 ypos = self.info["actareay"] + (60*i)
                 self.drawbutton(ypos,buttontexts[i])
                 if i == self.selector:
                     self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
+        
+
+        
+        
         
         # Define layout for Notes Tiles
         if self.type == 3:
@@ -435,7 +490,12 @@ class displayarea(object):
         if self.type == 1:
             self.graph = GraphLine(660,120,1080,340,5, "CPU")
             self.graph2 = GraphLine(660,380,1080,600,5, "RAM")
-         #   self.graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
+            self.timer = pygame.time.Clock()
+        
+        #interval timer variables:
+        self.lasttime = 0
+        self.interval = 50
+        
     
     def downkey(self):
         self.selector += 1
@@ -451,8 +511,10 @@ class displayarea(object):
         # It determines what type of tile it is and what the selected function is, because of the diversity
         # of tiles it will require a lot of different selections to be defined
 
-        # if this is a notes tile.
-        if self.type == 3:
+
+        #["Engage", "Up","Down","Refresh List", "Delete"]
+        # if this is an IFTTT tile.
+        if self.type == 2:
             if selection == 2:
                 self.selector += 1
             if selection == 1:
@@ -461,11 +523,34 @@ class displayarea(object):
                 item = self.folist[self.selector]
                 
                 fs = files()
+                triggerinfo = fs.getTrigger(item)
+                key,trig = triggerinfo
+                trigger = MakerTrigger(key,trig)
+                trigger.alert()
+                
+                
+        # if this is a notes tile.
+        if self.type == 3:
+            if selection == 2:
+                self.selector += 1
+            if selection == 1:
+                self.selector -= 1
+            if selection == 0:
+                
+                #
+                item = self.folist[self.selector]
+                
+                fs = files()
                 notetext = fs.getitem(item)
-                target.viewit(notetext)
                 
         # if viewing area selected collect image or text for viewing and instantiate a viewarea object with that data.
         
+                target.viewit(notetext)
+                
+
+                
+                
+                
 
 
     def selectoralign(self):
@@ -482,16 +567,14 @@ class displayarea(object):
         pygame.draw.rect(self.surface, buttonc, rect)
     
     def drawbutton(self,y,content):
-        butxmid = self.info["dispbx"] + (self.info["dispw"] / 2)  
+        butxmid = self.info["dispbx"] + 5  
         butymid = y + (40 / 2)  
         self.drawblock(y,40)
         butlabel = Label()
         butlabel.update(content,26,butxmid,y,titleFont,textc)
         size = butlabel.getrect()
-        butlabel.center(self.info["dispw"],40,self.info["dispbx"],y)
-        #textposx = butxmid - (size[0]/2)
-        #textposy = butymid - (size[1]/2)qq
-        
+        butlabel.left(self.info["dispw"],40,self.info["dispbx"],y)
+
         #butlabel.update(content,26,textposx,textposy,titleFont,textc)
         butlabel.draw(self.surface)
         
@@ -513,14 +596,39 @@ class displayarea(object):
             for i in range(2):
                 ypos = self.info["innery"] + (260 * i)
                 self.drawblock(ypos,220)
-            self.graph.update(self.surface,data['cpuperc'],0,100,textc)
-            self.graph2.update(self.surface,data['ramperc'],0,100,textc)
+                
+                
+            self.timenow = pygame.time.get_ticks()
+            elapsed = self.timenow - self.lasttime
+            if elapsed > self.interval:
+                self.lasttime = self.timenow
+                self.graph.update(self.surface,data['cpuperc'],0,100,textc)
+                self.graph2.update(self.surface,data['ramperc'],0,100,textc)
     
     
+        # iftt tile layout
+        
+        if self.type == 2:
+            triggers = files()
+            
+            self.folist = triggers.ListTriggers()
+            count= len(self.folist)
+            for i in range(count):
+                # name each button "Webook" and the Number of webhook it is indexed at 1
+                caption = str(self.folist[i])
+                
+                # set the position of the button
+                ypos = self.info["innery"] + (60 * i)
+                
+                self.drawbutton(ypos,caption)
+                
+                    
+                if i == self.selector:
+                    self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
+                    
         # notes tile layout
         if self.type == 3:
-            #self.graphassign(2)
-#           graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
+
             notes = files()
             
             self.folist = notes.ListText()
@@ -532,13 +640,28 @@ class displayarea(object):
                 if i == self.selector:
                     self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
 
+        # Image tile layout
+        if self.type == 4:
+
+            notes = files()
+            
+            self.folist = notes.ListText()
+            count= len(self.folist)
+            for i in range(count):
+                caption = str(self.folist[i])
+                ypos = self.info["innery"] + (60 * i)
+                self.drawbutton(ypos,caption)
+                if i == self.selector:
+                    self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
+
+
         
     def update(self):
         pass
     
 class Tile(object):
     def __init__(self,tiletype,surface,screenSize,colour,index):
-        self.info = {"tiletype" : tiletype, "surface" : surface, "x" : 160, "y" : 80, "index" : index, "colour" :colour , "seam" : 80, "inner" : 40, "titlesize" : 100, "spanx" : 960, "spany" : 560, "innerx" : 200, "innery" : 120, "inspanx" : 880, "inspany" : 480, "lineposy" : 240, "aaspanx" : 420, "dispposx" : 660, "dispw" : 420, "disph" : 480, "actareay" : 320, "actareaw" : 420, "actareah" : 280}       
+        self.info = {"tiletype" : tiletype, "surface" : surface, "x" : 160, "y" : 80, "index" : index, "colour" :colour , "seam" : 80, "inner" : 40, "titlesize" : 100, "spanx" : 960, "spany" : 560, "innerx" : 200, "innery" : 120, "inspanx" : 880, "inspany" : 480, "lineposy" : 210, "aaspanx" : 420, "dispposx" : 660, "dispw" : 420, "disph" : 480, "actareay" : 320, "actareaw" : 420, "actareah" : 280}       
         self.info["tilejump"] = self.info["seam"] + self.info["spanx"]
 
         if self.info["index"] > 0:
@@ -565,24 +688,33 @@ class Tile(object):
         self.actionarea.downkey()
         
     def enterkey(self,status):
+        
         #receives enter key and passes it to action area
+        
+        # if the tile is currently in a viewing event (looking at an image or a note)
         if self.viewing:
+            #Direct enterkey events to the viewing area as opposed to the action/display area (so that enters effect the viewing area)
            self.viewframe.enterkey(self)
         else:
+            # otherwise see what the current selected button is in the action area
             selection = self.actionarea.enterkey()
             
+            # if the action area has a "quit" button selected (not sure if this is still what's happening, may be deprecated)
             if selection == "quit":
+                # then return a quit directive to the main loop
                 print("quit also received")
                 status = "quit"
-            self.disparea.enterkey(selection,self)
-                
-            if status == "quit":
-                print("returning status")
                 return status
+                
+            # if no quit event is received then pass the display area the currently selected button in the action area, 
+            #and a copy of this tile so the display area has access to the tile's methods
+            self.disparea.enterkey(selection,self)
+            
 
 
     
     def leftkey(self):
+        # if a left key event is received 
         self.viewframe.leftkey()
 
     def rightkey(self):
@@ -621,41 +753,28 @@ class Tile(object):
                     
     def updatelayout(self):
         # the following checks what kind of tile this is and updates the layout accordingly
-        if self.info["tiletype"] == 0:
-            self.title = "Home"
 
-        if self.info["tiletype"] == 1:
-            self.title = "System"
-        
-        if self.info["tiletype"] == 2:
-            self.title = "Assistant"
-        
-        if self.info["tiletype"] == 3:
-            self.title = "Notes"
-        
-        if self.info["tiletype"] == 4:
-            self.title = "RSS"
-            
+        index = self.info["tiletype"]
+
+        self.title = tileTitles[index]
+
         self.disparea = displayarea(self.info)
         self.actionarea = actionarea(self.info)
-            
-    def update(self):
-        pass
+
     
     def position(self,page):
-        # the following updates internal coordinates for each tile so that tiles can move horizontally when the user selects a new one.
+        # the following updates internal coordinates for each tile so that tiles can move horizontally when the user selects a new one. This basically allows for the main loop to feed updated position data to each tile so they can move appropriately
+        
+        # current  X position =  default X position - the tilejump X scaler * the page number 
         self.info["pos"] = (self.info["x"] - ((self.info["tilejump"]) * page)),self.info["y"]
         self.info["upx"] = (self.info["x"] - (self.info["tilejump"] * page))
         self.info["innerx"] = (self.info["x"] - (self.info["tilejump"] * page)) + self.info["inner"]
         self.info["dispbx"] = self.info["innerx"] + 459
         self.info["pageadjust"] = self.info["tilejump"] * page
 
-
-    def getinfo(self):
-        return self.layout
-
     def draw(self,page1):
-
+        
+        # takes the integer scaler value and turns it into a page index.
         page = (float(page1) / 100)
 
         # check position values

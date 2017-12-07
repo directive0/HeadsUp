@@ -17,3 +17,25 @@ def sensorget():
 def voicecall():
     pass
     
+
+from subprocess import check_output
+
+def getwifi():
+    try:
+        scanoutput = check_output(["iwgetid"])
+    
+        ssid = "WiFi not found"
+    
+        for line in scanoutput.split():
+            line = line.decode("utf-8")
+            if line[:5]  == "ESSID":
+                #will need to fix this for names with spaces.
+                ssid = line.split('"')[1]
+                ssidname = str(ssid.encode())
+                string = "SSID: " + ssidname
+                
+    except OSError:
+        string = "No Wifi SSID Found"
+        
+    return str(string)
+    
