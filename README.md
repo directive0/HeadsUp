@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/directive0/picorder/master/assets/logo.png?raw=true "Logo")
+![Logo](https://raw.githubusercontent.com/directive0/HeadsUp/master/assets/logo.png?raw=true "Logo")
 
 # HeadsUp!
 
