@@ -2,12 +2,15 @@
 
 """
 
-# HeadsUp Mark 7 -  Tiles that serve information to a headsup display, send and recieve arbitrary IFTTT 
-# Code by C.Barrett
-# Designed by S.Caem
+HeadsUp Mark 7 -  Tiles that serve information to a headsup display, send and recieve arbitrary IFTTT
 
-# Exciting developments:
-# -Nothing to report.
+    Code by C.Barrett
+    Designed by S.Caem
+
+Exciting developments:
+
+    -Finally got IFTTT working
+
 
 """
 
