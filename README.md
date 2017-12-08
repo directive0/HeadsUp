@@ -61,6 +61,7 @@ If these modules are not already present on your machine they should be easy to 
 
 - Clone the git repo to your machine
 
+
 - Open a terminal and navigate to the HeadsUp folder
 
 - Issue the command `python3 main.py` and the program will start
