@@ -6,7 +6,7 @@ A simple pygame interface for a heads up display (HUD) intended to work with [Vu
 
 - Code by [C.Barrett](www.directive0.com)
 
-- Design by S.Caem
+- Design by [S.Caem](mailto:thedigitons@gmail.com)
 
 The basic design intent of this program is to allow users to be able to access text and image reference, to view sensors related to the environment, and to trigger and receive IFTTT webhook events all from a simple wearable computing rig. It aims to offer some functionality approaching the level of products like Google Glass or HoloLens but without any augmented reality. 
 
