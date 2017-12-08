@@ -23,19 +23,20 @@ from subprocess import check_output
 def getwifi():
     try:
         scanoutput = check_output(["iwgetid"])
-    
+        print(scanoutput)
         ssid = "WiFi not found"
     
         for line in scanoutput.split():
             line = line.decode("utf-8")
+            print(line)
             if line[:5]  == "ESSID":
                 #will need to fix this for names with spaces.
                 ssid = line.split('"')[1]
                 ssidname = str(ssid.encode())
                 string = "SSID: " + ssidname
                 
-    except OSError:
-        string = "No Wifi SSID Found"
-        
+    except:
+        string = "Unable to Retrieve WIFI Name"
+
     return str(string)
     

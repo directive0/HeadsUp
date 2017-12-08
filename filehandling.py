@@ -72,6 +72,7 @@ class files(object):
                 if file.find(".txt"):
                     name = file.replace(".txt", "")
                     textlist.append(name)
+        textlist.sort()
         return textlist
         
     def ListText(self):
@@ -85,6 +86,8 @@ class files(object):
             if file.endswith(".txt"):
                 textlist.append(file)
         
+        #sort the list so its more useful
+        textlist.sort()
         # we return this list to the asker
         return textlist
         

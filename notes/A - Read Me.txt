@@ -1,0 +1,10 @@
+This is the viewing area. You can store simple notes here that you can view quickly at a glance. 
+
+The viewing area can show multiple pages of text which could be useful for keeping a list of information handy and reviewing it when you need it.
+
+Some examples would be:
+
+Recipes
+DIY Tutorials
+Take apart steps
+

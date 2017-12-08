@@ -241,31 +241,43 @@ class Box(object):
 
 class viewingarea(object):
     def __init__(self, content, info):
+        
         self.content = content
+        
         self.info = info
+        
         self.textarea = Label()
+        
+        # defines the surface we will be drawing to, passed from our tiles object
         self.surface = self.info["surface"]
+        
+        # draw our background box
         self.substrate = Box()
         self.substrate.update(200,120,(880, 440),buttonc)
+        
+        # Sets the currently selected button
         self.selector = 0
         self.selectmax = 2
         self.page = 0
         
     def rightkey(self):
-        self.selector += 1
-        self.selectalign()
+        self.page += 1
+        self.pageadjust()
         
     def leftkey(self):
-        self.selector -= 1
-        self.selectalign()
+        self.page -= 1
+        self.pageadjust()
+        
+    def pageadjust(self):
+        if self.page <= 0:
+            self.page = 0
         
     def enterkey(self,tile):
         if self.selector == 0:
             tile.stopview()
         elif self.selector == 1:
             self.page -=1
-            if self.page <= 0:
-                self.page = 0
+
         elif self.selector == 2:
             self.page +=1
             
@@ -304,10 +316,14 @@ class viewingarea(object):
         pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)
     
     def draw(self):
+        
         self.substrate.draw(self.surface)
+        
         self.textarea.update(self.content,26,0,0,titleFont,textc)
+        
         self.surface.blit(self.textarea.paragraph(self.page), (240,160))
         labels = ["Exit","Previous","Next"]
+        
         for i in range (3):
             label = labels[i]
             xgo = 200 + (200 * i)
@@ -399,6 +415,7 @@ class actionarea(object):
         self.info = info
 
         if self.type == 0:
+
             # Home Tile Action area
             
             # get time and date
@@ -464,10 +481,6 @@ class actionarea(object):
                 self.drawbutton(ypos,buttontexts[i])
                 if i == self.selector:
                     self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
-        
-
-        
-        
         
         # Define layout for Notes Tiles
         if self.type == 3:
@@ -731,14 +744,19 @@ class Tile(object):
         self.viewing = False
 
     def viewit(self, item):
-        print(item)
+        #print(item)
+        # Set the tiles state show that it is currently in view mode. This makes sure inputs are handled properly.
         self.viewing = True
+        
+        # apply the returned item (be it text or surface) 
         self.item = item
+        
+        # create a viewing area object with the appropriate information
         self.viewframe = viewingarea(self.item,self.info)
     
     def drawlayout(self):
         # the following checks what type of tile this is and draws elements accordingly. If there is a viewframe event triggered it draws that, if not it draws the standard layout.
-            #self.actarea = actionarea(0,self.info["surface"])
+
             if self.viewing:
                 self.viewframe.draw()
                 

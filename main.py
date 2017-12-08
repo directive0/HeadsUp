@@ -33,6 +33,9 @@ pygame.font.init()
 #screenSize = (640,480)
 screenSize = (1280,720)
 
+logo = pygame.image.load('assets/logo.png')
+pygame.display.set_icon(logo)
+
 # We activate some pygame parameters. Colour depth, and hide mouse.
 modes = pygame.display.list_modes(16)
 pygame.event.set_blocked(pygame.MOUSEMOTION)
