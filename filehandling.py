@@ -49,21 +49,30 @@ class files(object):
         
         return ret
 
-    def getitem(self,target):
+    def gettext(self,target):
         target = str("./notes/"+target)
         item = os.open(target, os.O_RDWR|os.O_CREAT)
         ret = os.read(item,10000)
         return ret
+    
+    
+    def getimage(self,target):
+        target = str("./images/"+target)
+        item = os.open(target, os.O_RDWR|os.O_CREAT)
+        ret = os.read(item,10000)
+        return ret
+    
+    
 
     
-    def ListDir(self):
-        # something I found. It parses a list of the items present in a directory and only adds the subdirectories to the list. Returns that list.
+    #~ def ListDir(self):
+        #~ # something I found. It parses a list of the items present in a directory and only adds the subdirectories to the list. Returns that list.
         
-        # need to figure out how this x for x in object thing works.
+        #~ # need to figure out how this x for x in object thing works.
         
-        self.dirlist = [x for x in os.listdir('.') if os.path.isdir(x)]
+        #~ self.dirlist = [x for x in os.listdir('.') if os.path.isdir(x)]
 
-        return self.dirlist
+        #~ return self.dirlist
     
     def ListTriggers(self):
         textlist = []

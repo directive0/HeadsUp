@@ -324,12 +324,12 @@ class viewingarea(object):
         self.surface.blit(self.textarea.paragraph(self.page), (240,160))
         labels = ["Exit","Previous","Next"]
         
-        for i in range (3):
-            label = labels[i]
-            xgo = 200 + (200 * i)
-            self.drawbutton(xgo, label)
-            if i == self.selector:
-                self.outline(xgo,(xgo+180),580,(580+40),3)
+  
+        label = labels[0]
+        xgo = 200
+        self.drawbutton(xgo, label)
+        if 0 == self.selector:
+            self.outline(xgo,(xgo+180),580,(580+40),3)
 
     
 
@@ -554,7 +554,7 @@ class displayarea(object):
                 item = self.folist[self.selector]
                 
                 fs = files()
-                notetext = fs.getitem(item)
+                notetext = fs.gettext(item)
                 
         # if viewing area selected collect image or text for viewing and instantiate a viewarea object with that data.
         

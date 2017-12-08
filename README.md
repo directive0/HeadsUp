@@ -24,9 +24,11 @@ A secondary desire of the project is that it be modular and allow users with a m
 
 
 ### What is left to be done:
+- Numerous tiny bugs
 - Recieve IFTTT alerts
 - Open Images
 - Final bug testing and cleanup
+- Deciding whether to make user-generated tiles a big feature. It will require considerable refactoring (and I'm lazy -d0)
 
 ## Required Hardware:
 
