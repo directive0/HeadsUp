@@ -2,7 +2,15 @@
 import requests
 
 
-#got this from here: http://refriedbean.co.uk/python-ifttt-trigger-class/
+""""
+I shamelessly stole this from here:
+
+Author: Simon Painter
+
+http://refriedbean.co.uk/python-ifttt-trigger-class/
+
+"""
+
 class MakerTrigger(object):
     def __init__(self,key,trigger):
         self.key = key

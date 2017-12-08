@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 """
-
     I shamelessly stole this from here:
     
     Original Author: David Clark (da_clark at shaw.ca)
