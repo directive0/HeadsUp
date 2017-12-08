@@ -53,11 +53,17 @@ HeadsUp is designed to run on Python 3.
 
 If these modules are not already present on your machine they should be easy to install with Pip like so:
 
-'sudo pip3 install pygame psutil time requests'
+`sudo pip3 install pygame psutil time requests`
 
 ## Installation
 
-- Ensure your machine has the appropriate version of Python and its dependencies. 
+- Ensure your machine has the appropriate version of Python and its dependencies as listed above. 
+
+- Clone the git repo to your machine
+
+- Open a terminal and navigate to the HeadsUp folder
+
+- Issue the command `python3 main.py` and the program will start
 
 ## Keys
 
