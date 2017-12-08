@@ -8,6 +8,8 @@
 
     http://www.pygame.org/pcr/text_rect/index.php
     
+    It has been modified to suit my needs.
+    
 """
 
 class TextRectException():
@@ -122,28 +124,3 @@ class TextBlock(object):
     
         return surface
     
-
-if __name__ == '__main__':
-    import pygame
-    import pygame.font
-    from pygame.locals import *
-
-    pygame.init()
-
-    display = pygame.display.set_mode((400, 400))
-
-    my_font = pygame.font.Font(None, 22)
-
-    my_string = "Hi there! I'm a nice bit of wordwrapped text. Won't you be my friend? Honestly, wordwrapping is easy, with David's fancy new render_textrect () function.\nThis is a new line.\n\nThis is another one.\n\n\nAnother line, you lucky dog."
-
-    my_rect = pygame.Rect((40, 40, 300, 300))
-    
-    rendered_text = render_textrect(my_string, my_font, my_rect, (216, 216, 216), (48, 48, 48), 0)
-
-    if rendered_text:
-        display.blit(rendered_text, my_rect.topleft)
-
-    pygame.display.update()
-
-    while not pygame.event.wait().type in (QUIT, KEYDOWN):
-        pass

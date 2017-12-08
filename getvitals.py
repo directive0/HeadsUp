@@ -1,5 +1,6 @@
 import psutil
 import time
+from subprocess import check_output
 
 def sensorget():
     
@@ -13,12 +14,8 @@ def sensorget():
    vitaldict['cpufreq'] = str(psutil.cpu_freq())
 
    return vitaldict
+   
 
-def voicecall():
-    pass
-    
-
-from subprocess import check_output
 
 def getwifi():
     try:

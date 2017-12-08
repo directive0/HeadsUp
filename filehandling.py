@@ -1,7 +1,7 @@
 # file handling for headsup
 
 import os
-
+import pygame
 
 #read the contents of folder and return it as a list
 #open and change directory
@@ -57,10 +57,11 @@ class files(object):
     
     
     def getimage(self,target):
-        target = str("./images/"+target)
-        item = os.open(target, os.O_RDWR|os.O_CREAT)
-        ret = os.read(item,10000)
-        return ret
+        image = str("./images/"+target)
+        item = pygame.image.load(image)
+        
+        
+        return item
     
     
 
@@ -99,6 +100,23 @@ class files(object):
         textlist.sort()
         # we return this list to the asker
         return textlist
+        
+        
+    def ListImage(self):
+        # this function polls a directory for all files ending in ".jpg"
+        
+        # we create a list to store the file names in
+        imagelist = []
+        
+        # for each item in the specified directory we grab each one that ends in ".txt"
+        for file in os.listdir("./images"):
+            if file.endswith(".jpg") or file.endswith(".png"):
+                imagelist.append(file)
+        
+        #sort the list so its more useful
+        imagelist.sort()
+        # we return this list to the asker
+        return imagelist
         
     def Open(self, item):
         #element should be passed a filename and use its current directory 

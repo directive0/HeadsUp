@@ -317,11 +317,17 @@ class viewingarea(object):
     
     def draw(self):
         
+        #draw the background box
         self.substrate.draw(self.surface)
         
-        self.textarea.update(self.content,26,0,0,titleFont,textc)
+        # check if this is a notes tile (3) or an image tile (4)
+        if self.info["tiletype"] == 3:
+            self.textarea.update(self.content,26,0,0,titleFont,textc)
+            self.surface.blit(self.textarea.paragraph(self.page), (240,160))
+        elif self.info["tiletype"] == 4:
+            self.content = pygame.transform.scale(self.content, (800,440))
+            self.surface.blit(self.content,(200,120))
         
-        self.surface.blit(self.textarea.paragraph(self.page), (240,160))
         labels = ["Exit","Previous","Next"]
         
   
@@ -492,6 +498,16 @@ class actionarea(object):
                 if i == self.selector:
                     self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
 
+        # Define layout for Images tile
+        if self.type == 4:
+            buttontexts = ["View","Up","Down", "Refresh List", "Delete"]
+            self.selectmax = len(buttontexts)
+            for i in range(self.selectmax):
+                ypos = self.info["actareay"] + (60*i)
+                self.drawbutton(ypos,buttontexts[i])
+                if i == self.selector:
+                    self.outline(self.info["innerx"],(self.info["innerx"] + self.info["aaspanx"]),ypos,(ypos+40),3)
+
 
     
 class displayarea(object):
@@ -559,6 +575,22 @@ class displayarea(object):
         # if viewing area selected collect image or text for viewing and instantiate a viewarea object with that data.
         
                 target.viewit(notetext)
+                
+        # if this is an images tile.
+        if self.type == 4:
+            if selection == 2:
+                self.selector += 1
+            if selection == 1:
+                self.selector -= 1
+            if selection == 0:
+                item = self.folist[self.selector]
+                
+                fs = files()
+                image = fs.getimage(item)
+                
+        # if viewing area selected collect image or text for viewing and instantiate a viewarea object with that data.
+        
+                target.viewit(image)
                 
 
                 
@@ -656,9 +688,9 @@ class displayarea(object):
         # Image tile layout
         if self.type == 4:
 
-            notes = files()
+            images = files()
             
-            self.folist = notes.ListText()
+            self.folist = images.ListImage()
             count= len(self.folist)
             for i in range(count):
                 caption = str(self.folist[i])
@@ -667,10 +699,6 @@ class displayarea(object):
                 if i == self.selector:
                     self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
 
-
-        
-    def update(self):
-        pass
     
 class Tile(object):
     def __init__(self,tiletype,surface,screenSize,colour,index):
