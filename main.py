@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 """
+
 # HeadsUp Mark 7 -  Tiles that serve information to a headsup display, send and recieve arbitrary IFTTT 
 # Code by C.Barrett
 # Designed by S.Caem
 
 # Exciting developments:
 # -Nothing to report.
-
 
 """
 
