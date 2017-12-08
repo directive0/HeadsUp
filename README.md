@@ -4,7 +4,7 @@
 
 A simple pygame interface for a heads up display (HUD) intended to work with [VuFine headsets](https://www.vufine.com/) and [Raspberry Pi](https://www.raspberrypi.org/). It is the joint effort of two people who have never met. 
 
-- Code by [C.Barrett](www.directive0.com)
+- Code by [C.Barrett](http://www.directive0.com)
 
 - Design by [S.Caem](mailto:thedigitons@gmail.com)
 
