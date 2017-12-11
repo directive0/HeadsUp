@@ -14,7 +14,7 @@ def sensorget():
    vitaldict['cpufreq'] = str(psutil.cpu_freq())
 
    return vitaldict
-   
+
 
 
 def getwifi():

@@ -229,15 +229,21 @@ class Box(object):
         self.size=(50,50)
         self.color=(0,0,255)
         
+    def getcenter(self):
+        self.ret = self.rect.center
+        return self.ret
+        
     def update(self, x, y, size, color):
         self.x = x
         self.y = y
         self.size = size
         self.color = color
+        
     
     def draw(self, surface):
-        rect = pygame.Rect((self.x,self.y), self.size)
-        pygame.draw.rect(surface, self.color, rect)
+        self.rect = pygame.Rect((self.x,self.y), self.size)
+        pygame.draw.rect(surface, self.color, self.rect)
+
 
 class viewingarea(object):
     def __init__(self, content, info):
@@ -315,17 +321,24 @@ class viewingarea(object):
     def outline(self,xLeft,xRight,yTop,yBottom,line):
         pygame.draw.lines(self.surface, textc, False, ((xLeft,yTop),(xRight,yTop),(xRight,yBottom),(xLeft,yBottom),(xLeft,yTop)), line)
     
+
     def draw(self):
-        
-        #draw the background box
+        # draw the background box
         self.substrate.draw(self.surface)
         
         # check if this is a notes tile (3) or an image tile (4)
         if self.info["tiletype"] == 3:
             self.textarea.update(self.content,26,0,0,titleFont,textc)
             self.surface.blit(self.textarea.paragraph(self.page), (240,160))
+            
+        # if its an image viewing tile
         elif self.info["tiletype"] == 4:
-            self.content = pygame.transform.scale(self.content, (800,440))
+            
+            
+            backrect = self.substrate.getcenter()
+            
+            self.content = pygame.transform.scale(self.content, (880,440))
+
             self.surface.blit(self.content,(200,120))
         
         labels = ["Exit","Previous","Next"]
@@ -555,8 +568,10 @@ class displayarea(object):
                 triggerinfo = fs.getTrigger(item)
                 key,trig = triggerinfo
                 trigger = MakerTrigger(key,trig)
-                trigger.alert()
-                
+                try:
+                    trigger.alert()
+                except:
+                    pass
                 
         # if this is a notes tile.
         if self.type == 3:

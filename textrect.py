@@ -22,6 +22,7 @@ class TextBlock(object):
     
 
     def render_textrect(self,string, font, rect, text_color, background_color, pagenum, justification=0):
+        
         """Returns a surface containing the passed text string, reformatted
         to fit within the given rect, word-wrapping as necessary. The text
         will be anti-aliased.
@@ -56,7 +57,10 @@ class TextBlock(object):
         # rectangle.
     
         for requested_line in requested_lines:
+            
+            
             if font.size(requested_line)[0] > rect.width:
+                requested_line = str(requested_line)
                 
                 words = requested_line.split(' ')
                 # if any of our words are too long to fit, return.
@@ -95,7 +99,8 @@ class TextBlock(object):
         nolines = len(final_lines)
         
         # the following dealy splits the strings up into groups of 15 so we can view them as pages. The variable "pagenum" lets us know where we are.
-
+        self.nopages = len(final_lines)/14
+                
         if len(final_lines) > 14:
             for i in range(14):
                 target = page + (i)
@@ -124,3 +129,5 @@ class TextBlock(object):
     
         return surface
     
+    def nopages(self):
+        return self.nopages

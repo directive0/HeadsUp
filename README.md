@@ -55,9 +55,11 @@ HeadsUp is designed to run on Python 3.
 - os (included with python)
 - time (included with python)
 
-If these modules are not already present on your machine they should be easy to install with Pip like so:
+If these modules are not already present on your machine they should be easy to install with Apt-get, Pip like so:
 
-`sudo pip3 install pygame psutil time requests`
+`sudo apt-get install python3 python3-dev python3-pygame python3-pip`
+
+`sudo pip3 install psutil requests`
 
 ## Installation
 
