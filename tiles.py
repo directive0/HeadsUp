@@ -179,6 +179,9 @@ class Label(object):
     def pageup(self):
         pass
 
+    def nopages(self):
+        ret = self.text.nopages
+        return ret
 
 
     def paragraph(self,page):
@@ -186,11 +189,17 @@ class Label(object):
         my_rect = pygame.Rect((0, 0, 804, 366))
 
         self.text = TextBlock()
-    
+
         # this next function returns a block of text rendered for the screen.
         rendered_text = self.text.render_textrect(self.content, self.myfont, my_rect, textc, buttonc, page,0)
-        
+
+        #self.nopage = self.text.nopages()
+
         return rendered_text
+
+
+    def getpages(self):
+        return self.nopage
 
     def getrect(self):
         label = self.myfont.render(self.content, 1, self.color)
@@ -277,6 +286,8 @@ class viewingarea(object):
     def pageadjust(self):
         if self.page <= 0:
             self.page = 0
+        if self.page >= (self.maxpages-1):
+            self.page = (self.maxpages-1)
         
     def enterkey(self,tile):
         if self.selector == 0:
@@ -329,7 +340,11 @@ class viewingarea(object):
         # check if this is a notes tile (3) or an image tile (4)
         if self.info["tiletype"] == 3:
             self.textarea.update(self.content,26,0,0,titleFont,textc)
+            
             self.surface.blit(self.textarea.paragraph(self.page), (240,160))
+            
+            self.maxpages = int(self.textarea.nopages())
+            print(self.maxpages)
             
         # if its an image viewing tile
         elif self.info["tiletype"] == 4:

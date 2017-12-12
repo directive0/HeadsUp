@@ -93,14 +93,16 @@ class TextBlock(object):
         # make a list to hold our working strings.
         working_lines = []
         
-    
+        
+        # take the pagenumber and knowing that 14 is the height of the 
         page = (pagenum * 14)
     
+        # store the number of lines
         nolines = len(final_lines)
         
         # the following dealy splits the strings up into groups of 15 so we can view them as pages. The variable "pagenum" lets us know where we are.
-        self.nopages = len(final_lines)/14
-                
+        self.nopages = nolines/14
+
         if len(final_lines) > 14:
             for i in range(14):
                 target = page + (i)

@@ -2,14 +2,10 @@
 
 """
 
-HeadsUp Mark 7 -  Tiles that serve information to a headsup display, send and recieve arbitrary IFTTT
+    HeadsUp Mark 8
 
     Code by C.Barrett
     Designed by S.Caem
-
-Exciting developments:
-
-    -Finally got IFTTT working
 
 
 """
@@ -61,22 +57,21 @@ tilelist = []
 notiles = 6
 
 
+# the following variables help store and control animation behaviour.
 
+# page stores the actual in focus tile
 page = 0
+
+# selector stores the desired in focus tile.
 selector = 0
+
+# speed determines the pixel jumps each step.
 speed = 20
-director = 0
 
 
 #need to find a way to move tiles using integers
 messageback = "none"
 
-# this is a function that returns text at the proper dimensions to fit a rectangle.
-def dynamic_font(text, name, size, color, width, aa=True, dec_by=1):
-    font = pg.font.Font(name, size)
-    if font.size(text)[0] > width:
-        return dynamic_font(text, name, size-dec_by, color, width, aa, dec_by)
-    return font.render(text, aa, color)
 
 # This class draws our page indicator circles.
 class Indicator(object):        
@@ -144,8 +139,8 @@ class Scene(object):
         
     def update(self,page):
         pass
-        
-        
+
+
 # The following class is to handle interval timers.
 class timer(object):
 
@@ -157,7 +152,7 @@ class timer(object):
     # The following funtion returns the last logged value.        
     def timestart(self):
         return self.timeInit
-        
+
     # the following function updates the time log with the current time.
     def logtime(self):
         self.lastTime = time.time()
@@ -167,18 +162,19 @@ class timer(object):
         self.timeLapse = time.time() - self.lastTime
         #print(self.timeLapse)
         return self.timeLapse
-         
-         
+
+
+
 def vitalshow():
     info = sensorget()
     title = Label()
     title.update("LOCAL",60,84,170,titleFont,red)
     title.draw(surface)
-    
+
     cpulabel = Label()
     cpulabel.update("CPU % = " + info['cpuperc'],50,84,300,titleFont,red)
     cpulabel.draw(surface)
-    
+
     ramlabel = Label()
     ramlabel.update("RAM % = " + info['ramperc'],50,84,370,titleFont,red)
     ramlabel.draw(surface)
@@ -189,49 +185,40 @@ for i in range(notiles):
     tile = Tile(i,surface,screenSize,background,i)
     tilelist.append(tile)
 
-        
-# we make an indicator object.    
+
+# we make an indicator object, these are the "dots" that tell the user what tile they're on
 indicator1 = Indicator(surface,screenSize,notiles)
 
-# the following objects control interval timing for the graphs and something else... I think? hmmmmm.
+# the following objects are interval timers that regulate the drawing of various interface elements.
 interval = timer()
 graphtime = timer()
 
 while(status != "quit"):
 
     
-    # page = selector
-    # following mess of code moves the tiles into the correct position.
+    # Tiles position is definied by the selector.
+    # an integer (selector) determines the tile that should be shown from 0-max amount of tiles.
+    # this integer is then (selectorAdj) multiplied by 100 to allow the tiles to be shifted in increments each tick.
+
     selectorAdj = selector * 100
-    
+
+    # We wait for a timer to elapse
     if (interval.timelapsed() >= .001):
 
-        
+        # reset the interval timer
         interval.logtime()
-        
+
+        # the following if statement 
         if page < selectorAdj:
             page = page + speed
-        
+
         if page > selectorAdj:
             page = page - speed
-        
-    #print("selector adjust is:")    
-    #print(selectorAdj)
-    #print("page is:")
-    #print(page)
-    #print(page)
 
     
-   # if page < 0:
-   #     page  = 0
-
-
-    # print "page = " + str(page)
-    # print "selector = " +  str(selector)
+    # we begin the screen drawing portion of the loop
     
-    # we begin the screen drawing of the loop
-    
-    # fill the background black
+    # fill the background with black
     surface.fill(black)
     
     # for loop to draw each of the objects in our object list.

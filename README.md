@@ -55,7 +55,7 @@ HeadsUp is designed to run on Python 3.
 - os (included with python)
 - time (included with python)
 
-If these modules are not already present on your machine they should be easy to install with Apt-get, Pip like so:
+If these modules are not already present on your machine they should be easy to install with apt-get, pip like so:
 
 `sudo apt-get install python3 python3-dev python3-pygame python3-pip`
 
@@ -63,13 +63,23 @@ If these modules are not already present on your machine they should be easy to 
 
 ## Installation
 
+- if using a vufine display and raspberry pi running raspbian make sure to disable overscan in your /boot/config.txt file
+
+- use raspi-config to change your resolution to 1280x720 60hz
+
 - Ensure your machine has the appropriate version of Python and its dependencies as listed above. 
 
-- Clone the git repo to your machine
+- Clone the git repo to your machine 
+
+`git clone https://www.headsup.com/directive0/HeadsUp`
 
 - Open a terminal and navigate to the HeadsUp folder
 
-- Issue the command `python3 main.py` and the program will start
+`cd HeadsUp`
+
+- Issue the command and the program will start
+
+`python3 main.py`
 
 ## Keys
 
