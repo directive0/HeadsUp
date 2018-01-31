@@ -13,6 +13,7 @@ The basic design intent of this program is to allow users to be able to access t
 A secondary desire of the project is that it be modular and allow users with a moderate knowledge of Python to create their own tile layouts if they desire, but this aspect is not fully realized yet.
 
 
+<<<<<<< HEAD
 
 ### What works at present:
 
@@ -107,3 +108,6 @@ Add any text files you wish to view from HeadsUp! in the "notes" folder.
 ## Images:
 
 Add any images you wish to display to the "images" folder
+=======
+Please visit [SquaredWave.com](https://squaredwave.com/wiki/index.php?title=HeadsUp) for complete details.
+>>>>>>> 645cd52804f3277f0c2d08ca22ad54d022de4119
