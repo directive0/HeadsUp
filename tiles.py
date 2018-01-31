@@ -1,6 +1,15 @@
-# HeadsUp Tiles
-# Code by C.Barrett
-# Design by S.Caem
+#!/usr/bin/env python
+
+"""
+
+    HeadsUp
+
+    Code by C.Barrett
+    Designed by S.Caem
+    
+    This file controls the layout of each Tile.
+
+"""
 
 
 import pygame
@@ -12,6 +21,7 @@ from getvitals import *
 from filehandling import *
 from textrect import *
 from ifttt import *
+from calget import *
 #from main import tileTitles
 
 # Here are some basic colours we can call on.
@@ -182,7 +192,6 @@ class Label(object):
     def nopages(self):
         ret = self.text.nopages
         return ret
-
 
     def paragraph(self,page):
 
@@ -657,13 +666,36 @@ class displayarea(object):
         
         self.info = info
         
-        # Home Tile layout
+        # --------------------------------------------------------------------------------- Home Tile layout
+        # Display the current Calendar data
         if self.type == 0:
             self.info = info
-            self.message = "No New Messages"
+            
+            # Draw the agenda label
+            self.heading = "Agenda"
+            agendaheading = Label()
+            agendaheading.update(self.heading,30,self.info["dispbx"] + 10 , self.info["innery"] + 10,titleFont,textc)
+            
+            # Draw todays date.
+            datelabel = Label()
+            
+            
             self.drawblock(self.info["innery"],self.info["disph"])
-        
-        # System Tile Layout 
+            agendaheading.draw(self.surface)
+            
+            events = CalendarPull()
+            
+            eventlist = events.GetTodaysEvents()
+            
+            listsize = len(eventlist)
+            objs = [Label() for i in range(listsize)]
+            i=0
+            for obj in objs:
+                content = eventlist[i]
+                obj.update(content,20,self.info["dispbx"] + 10 ,(self.info["innery"]+60)+(30 * i),titleFont,textc)
+                obj.draw(self.surface)
+                i += 1
+        # ------------------------------------------------------------------------------- System Tile Layout
         if self.type == 1:
             #self.graphassign(2)
 #           graph1 = GraphLine(xLeft,yTop,xRight,yBottom,line)
@@ -681,18 +713,19 @@ class displayarea(object):
                 self.graph2.update(self.surface,data['ramperc'],0,100,textc)
     
     
-        # iftt tile layout
-        
+        # iftt tile layout-------------------------------------------------------------------------------
         if self.type == 2:
+            
+            # Get the trigger text files
             triggers = files()
             
             self.folist = triggers.ListTriggers()
             count= len(self.folist)
             for i in range(count):
-                # name each button "Webook" and the Number of webhook it is indexed at 1
+                # name each button the title of the text file
                 caption = str(self.folist[i])
                 
-                # set the position of the button
+                # set the position of each button, each time through the loop the button is moved down 60 pixels
                 ypos = self.info["innery"] + (60 * i)
                 
                 self.drawbutton(ypos,caption)
@@ -701,7 +734,7 @@ class displayarea(object):
                 if i == self.selector:
                     self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
                     
-        # notes tile layout
+        # notes tile layout-------------------------------------------------------------------------------
         if self.type == 3:
 
             notes = files()
@@ -715,7 +748,7 @@ class displayarea(object):
                 if i == self.selector:
                     self.outline(self.info["dispbx"],(self.info["dispbx"] + self.info["dispw"]),ypos,(ypos+40),3)
 
-        # Image tile layout
+        # Image tile layout-------------------------------------------------------------------------------
         if self.type == 4:
 
             images = files()

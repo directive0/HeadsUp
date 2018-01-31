@@ -2,11 +2,12 @@
 
 """
 
-    HeadsUp Mark 8
+    HeadsUp
 
     Code by C.Barrett
     Designed by S.Caem
 
+    This file controls the overall flow of the program.
 
 """
 
@@ -73,32 +74,31 @@ speed = 20
 messageback = "none"
 
 
-# This class draws our page indicator circles.
+# This class handles our page indicator circles.
 class Indicator(object):        
     def __init__(self,surface,screenSize,notiles):
         
-        # needs to take number of tiles into account, 
-        #find the size of itself, 
-        #position itself centered and draw all the indicators. 
+        # collect the screensize
         self.screenX,self.screenY = screenSize
+        
+        # collect the number of tiles
         self.notiles = notiles
+
+        # collect the surface, physical layout paramaters (gap between circles, total spans)
         self.surface = surface
+
         self.space = 10
         self.spanY = 10
-        self.margin = 40
         self.spanX = ((self.spanY + self.space) * self.notiles) - self.space
+        self.margin = 40
 
+        # collect the physical parameters for the circles.
         self.rad = self.spanY / 2
         self.centerposy = (self.screenY - self.margin)
         self.centerposx = (self.screenX / 2)
-        
-        # the width of the indicator widget = ((diameter of circle + gap) * notiles)-gap 
-        # this gives us the total width of the widget
-        self.widgetx = ()
-        
-    def update(self, page):
-        if page > 0:
-            pass
+
+
+    # This function draws the indicator circles.
     
     def draw(self,page):
         
@@ -128,17 +128,6 @@ class Indicator(object):
             pygame.gfxdraw.aacircle(self.surface,circlex,circley,int(self.rad),indicolours[i])
             pygame.gfxdraw.filled_circle(self.surface,circlex,circley,int(self.rad),indicolours[i])
 
-def center(text,font,size):
-    pass
-    
-# The following class describes our scene and handles the general operation of our program.
-class Scene(object):
-    def __init__(self,tiles,size):
-        self.notiles = tiles
-        self.screenSize = size
-        
-    def update(self,page):
-        pass
 
 
 # The following class is to handle interval timers.
@@ -149,7 +138,7 @@ class timer(object):
         self.timeInit = time.time()
         self.logtime()
 
-    # The following funtion returns the last logged value.        
+    # The following funtion returns the first logged value.        
     def timestart(self):
         return self.timeInit
 
@@ -164,22 +153,6 @@ class timer(object):
         return self.timeLapse
 
 
-
-def vitalshow():
-    info = sensorget()
-    title = Label()
-    title.update("LOCAL",60,84,170,titleFont,red)
-    title.draw(surface)
-
-    cpulabel = Label()
-    cpulabel.update("CPU % = " + info['cpuperc'],50,84,300,titleFont,red)
-    cpulabel.draw(surface)
-
-    ramlabel = Label()
-    ramlabel.update("RAM % = " + info['ramperc'],50,84,370,titleFont,red)
-    ramlabel.draw(surface)
-
-
 # for loop to create our tiles and put them in our list of tiles
 for i in range(notiles):
     tile = Tile(i,surface,screenSize,background,i)
@@ -187,19 +160,22 @@ for i in range(notiles):
 
 
 # we make an indicator object, these are the "dots" that tell the user what tile they're on
+# we pass it our surface object, our screensize, and the number of tiles in our scene.
 indicator1 = Indicator(surface,screenSize,notiles)
 
 # the following objects are interval timers that regulate the drawing of various interface elements.
 interval = timer()
 graphtime = timer()
 
+
+# The following is the mainloop.
 while(status != "quit"):
 
     
-    # Tiles position is definied by the selector.
+    # In the scene the Tiles physical positions are maintained by the selectorAdj variable.
     # an integer (selector) determines the tile that should be shown from 0-max amount of tiles.
-    # this integer is then (selectorAdj) multiplied by 100 to allow the tiles to be shifted in increments each tick.
-
+    # this integer is then (selectorAdj) multiplied by 100 to allow the tiles to be shifted in pixels each tick.
+    # the actual position of the tiles is held by the page variable.
     selectorAdj = selector * 100
 
     # We wait for a timer to elapse
@@ -208,33 +184,39 @@ while(status != "quit"):
         # reset the interval timer
         interval.logtime()
 
-        # the following if statement 
+        # the following if statement checks if the page is higher or lower than the selectorAdj variable. 
+        
+        # If it's higher, we increment page
         if page < selectorAdj:
             page = page + speed
-
+            
+        # if it's lowers, we decrement.
         if page > selectorAdj:
             page = page - speed
 
-    
-    # we begin the screen drawing portion of the loop
-    
+
+    #------------------Begin screen drawing portion------------------
+
     # fill the background with black
     surface.fill(black)
-    
-    # for loop to draw each of the objects in our object list.
+
+    # for loop to draw each of the tiles in our tile list. We pass it the page so they can draw themselves to the right location.
     for i in range(notiles):
         tilelist[i].draw(page)
-    
+
     #draw our indicator circles.
     indicator1.draw(selector)
-    
+
     # define the midpoint of the screen.
     mid = 1280/2
-    
-    
+
     # puke all those pixels to screen.
     pygame.display.flip()
+
+    # keyinto lets us know which tile is presently selected, so that key evens can be sent to the right tile.
     keyinto = int(float(page) / 100)
+
+
     # input control handling. Get a list of most recent events.
     for event in pygame.event.get():
         # if quit was triggered make ready to quit.
@@ -242,6 +224,7 @@ while(status != "quit"):
             status = "quit"
         # otherwise if it was a keypress
         elif event.type == pygame.KEYDOWN:
+            
             # if it was left decrement the selector
             if event.key == pygame.K_LEFT:
                 if tilelist[keyinto].isview():
@@ -250,6 +233,7 @@ while(status != "quit"):
                     selector -= 1
                     if selector < 0:
                         selector = 0
+                        
             # if it was right increment the selector
             if event.key == pygame.K_RIGHT:
                 if tilelist[keyinto].isview():

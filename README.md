@@ -18,34 +18,35 @@ A secondary desire of the project is that it be modular and allow users with a m
 
 - Basic layout and interface.
 - Basic handling for notes.
+- Basic handling for images
 - User created IFTTT events can be added and triggered.
 - CPU and RAM status monitoring
 - WIFI SSID name reporting (not 100% yet)
 
 
 ### What is left to be done:
-- Numerous tiny bugs
-- Recieve IFTTT alerts
-- Open Images
+- Fix numerous tiny bugs
+- Recieve IFTTT alerts and display on main page.
 - Final bug testing and cleanup
 - Deciding whether to make user-generated tiles a big feature. It will require considerable refactoring (and I'm lazy -d0)
+- Comment as much code as possible for anyone wishing to make substantial improvements.
 
 ## Required Hardware:
 
 
 ### CPU
-- HeadsUp was designed for the Raspberry Pi 3 running Raspbian but will function on almost any computer running Python3, or if desired Python2+. 
+- HeadsUp was designed for the Raspberry Pi 3 running Raspbian but will function on almost any computer running Python3.
 
 ### Display
 - HeadsUp was designed to use the VuFine headset as its main display but it will run fine on any monitor that can meet a 1280x720 resolution.
-- In order to get HeadsUp to run at the proper resolution I've found you will need to deploy it from inside a display manager like LightDM. Running from terminal often makes HeadsUp display at half size for some reason.
+- For more detailed information regarding using a vufine headset see the "Installation" heading below.
 
 ### Interface
-- No keyboard interface has been defined yet but the software is being designed to support 5 basic controller buttons. I am leaning towards a Wii Nunchuck as my interface device but any 5 button interface could be supported in the future. For now the software polls pygame for simple keyboard presses.
+- No specific keyboard interface has been defined yet but the software is being designed to support 5 basic controller buttons. I am leaning towards a Wii Nunchuck as my interface device but any 5 button interface could be supported in the future. For now the software polls pygame for simple keyboard presses.
 
 ## Required Software
 
-HeadsUp is designed to run on Python 3.
+HeadsUp is designed to run on Python 3, or if desired it should work on Python2+ (not tested). 
 
 ### Python Dependencies
 - pygame
@@ -57,13 +58,15 @@ HeadsUp is designed to run on Python 3.
 
 If these modules are not already present on your machine they should be easy to install with apt-get, pip like so:
 
-`sudo apt-get install python3 python3-dev python3-pygame python3-pip`
+`sudo apt-get install -y python3 python3-dev python3-pygame python3-pip`
+
+And then...
 
 `sudo pip3 install psutil requests`
 
 ## Installation
 
-- if using a vufine display and raspberry pi running raspbian make sure to disable overscan in your /boot/config.txt file
+- if using a vufine display and raspberry pi running raspbian make sure to disable overscan in your /boot/config.txt file or else Pygame will give you warnings about no appropriate video mode.
 
 - use raspi-config to change your resolution to 1280x720 60hz
 
