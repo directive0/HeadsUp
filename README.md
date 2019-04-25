@@ -53,6 +53,8 @@ HeadsUp is designed to run on Python 3, or if desired it should work on Python2+
 - pygame
 - psutil
 - requests
+- ics
+
 
 - os (included with python)
 - time (included with python)
