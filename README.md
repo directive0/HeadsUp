@@ -75,7 +75,7 @@ And then...
 
 - Clone the git repo to your machine 
 
-`git clone https://www.headsup.com/directive0/HeadsUp`
+`git clone https://www.github.com/directive0/HeadsUp`
 
 - Open a terminal and navigate to the HeadsUp folder
 
