@@ -2,7 +2,7 @@ from ics import *
 import requests
 
 # Change this URL to the URL of your desired Calendar!
-url = "https://calendar.google.com/calendar/ical/6kpcc96jk7kg7bptfchei0m4b8%40group.calendar.google.com/public/basic.ics"
+url = "https://google.com/calendar/ical/students.uu.nl_plp5j8bh2qsjfloqi6qifsis28%40group.calendar.google.com/public/basic.ics"
 
 # this class should act as a container for your calender
 # you instantiate it once and then it loads the calendar into an object, parsed as individual events.
