@@ -30,8 +30,8 @@ pygame.font.init()
 #screenSize = (640,480)
 screenSize = (1280,720)
 
-logo = pygame.image.load('assets/logo.png')
-pygame.display.set_icon(logo)
+#logo = pygame.image.load('assets/logo.png')
+#pygame.display.set_icon(logo)
 
 # We activate some pygame parameters. Colour depth, and hide mouse.
 modes = pygame.display.list_modes(16)
@@ -42,7 +42,7 @@ pygame.mouse.set_visible(0)
 # instantiate a pygame display with the name "surface". 
 
 #surface = pygame.display.set_mode(screenSize, pygame.FULLSCREEN)
-surface = pygame.display.set_mode(screenSize)
+surface = pygame.display.set_mode((0,0),pygame.FULLSCREEN) #screenSize)
 pygame.display.set_caption('HeadsUp')
 
 # Set the state value.
